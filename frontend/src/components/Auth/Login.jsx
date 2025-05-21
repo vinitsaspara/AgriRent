@@ -18,13 +18,13 @@ export function Login() {
           headers: {
             'Content-Type': 'application/json',
           },
+          withCredentials: true,
         }
       );
 
       if (res.data.success) {
         alert(res.data.message);
-        localStorage.setItem('token', res.data.token);
-        window.location.href = '/';
+      
       } else {
         alert(res.data.message);
       }
