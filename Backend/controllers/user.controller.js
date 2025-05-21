@@ -6,10 +6,10 @@ export const signUp = async (req, res) => {
     try {
         const { userId, fullName, email, password, role, age, phoneNumber, address } = req.body;
 
-        // console.log(userId, fullName, email, password, role, age, phoneNumber, address);
+        console.log(userId, fullName, email, password, role, age, phoneNumber, address);
 
 
-        if (!userId || !fullName || !email || !password || !role || !age || !phoneNumber || !address) {
+        if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address) {
             return res.status(400).json({
                 message: "All fields are required.",
                 success: false
@@ -28,6 +28,10 @@ export const signUp = async (req, res) => {
         }
 
         const hashPassword = await bcrypt.hash(password, 10);
+
+        if(req.user && req.user.role === "Admin"){
+            role = req.body;
+        }
 
         await User.create({
             userId,

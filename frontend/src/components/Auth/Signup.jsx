@@ -1,57 +1,74 @@
-import axios from 'axios';
-import React from 'react';
+import { USER_API_END_POINT } from "@/utils/constant";
+import axios from "axios";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 export function Signup() {
+  const { user } = useSelector((state) => state.user);
+
+  const [formData, setFormData] = useState({
+    userId: "",
+    fullName: "",
+    email: "",
+    password: "",
+    address: "",
+    age: "",
+    phoneNumber: "",
+    role: "Farmer",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "age" ? parseInt(value) : value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const userId = e.target.userId.value;
-    const fullName = e.target.fullName.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const address = e.target.address.value;
-    const age = parseInt(e.target.age.value);
-    const phoneNumber = e.target.phoneNumber.value;
-    const role = e.target.role.value;
-
-    const payload = {
-      userId,
-      fullName,
-      email,
-      password,
-      address,
-      age,
-      phoneNumber,
-      role,
-    };
+    setLoading(true);
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/v1/user/signup',
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
+        `${USER_API_END_POINT}/signup`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
       );
 
       if (res.data.success) {
         alert(res.data.message);
-        window.location.href = '/';
+        window.location.href = "/";
       } else {
         alert(res.data.message);
       }
     } catch (err) {
-      console.error('Signup error:', err.response?.data || err.message);
-      alert(err.response?.data?.message || 'Signup failed');
+      console.error("Signup error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-md shadow-md p-6">
-        <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">Signup</h1>
+        <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+          Signup
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
             name="userId"
             placeholder="User ID"
+            value={formData.userId}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
@@ -59,6 +76,8 @@ export function Signup() {
             type="text"
             name="fullName"
             placeholder="Full Name"
+            value={formData.fullName}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
@@ -66,6 +85,8 @@ export function Signup() {
             type="email"
             name="email"
             placeholder="example@abc.com"
+            value={formData.email}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
@@ -73,12 +94,16 @@ export function Signup() {
             type="password"
             name="password"
             placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <textarea
             name="address"
             placeholder="Address"
+            value={formData.address}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
@@ -86,6 +111,8 @@ export function Signup() {
             type="number"
             name="age"
             placeholder="Age"
+            value={formData.age}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
@@ -93,27 +120,37 @@ export function Signup() {
             type="text"
             name="phoneNumber"
             placeholder="Phone Number"
+            value={formData.phoneNumber}
+            onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
 
-          <select
-            name="role"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Select Role</option>
-            <option value="Farmer">Farmer</option>
-            <option value="Admin">Admin</option>
-            <option value="Taluka">Taluka</option>
-            <option value="District">District</option>
-          </select>
+          {user?.role === "Admin" && (
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">Select Role</option>
+              <option value="Farmer">Farmer</option>
+              <option value="Taluka">Taluka</option>
+              <option value="District">District</option>
+            </select>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
+            disabled={loading}
+            className={`w-full text-white py-2 rounded-md transition-colors ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
           >
-            Signup
+            {loading ? "Signing up..." : "Signup"}
           </button>
         </form>
       </div>
