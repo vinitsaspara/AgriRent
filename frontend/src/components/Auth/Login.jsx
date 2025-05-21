@@ -6,6 +6,7 @@ import { setLoading, setUser } from '@/redux/slices/userSlice.js';
 import { redirect, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
+import { Navbar } from '../pages/Navbar';
 
 export function Login() {
 
@@ -50,7 +51,9 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+   <div>
+    <Navbar/>
+     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm p-6 bg-white rounded-md shadow-md">
         <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">
           Login
@@ -80,6 +83,7 @@ export function Login() {
       </div>
     
     </div> 
+   </div>
   );
 }
 
