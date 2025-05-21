@@ -8,7 +8,11 @@ import HomePage from "./components/pages/HomePage";
 const appRouter = createBrowserRouter([
   {path: "/", element: <HomePage />},
   {path: "/login", element: <Login />},
-{path: "/signup",element: <Signup />},])
+{path: "/signup",element: <Signup />},
+
+  {path:"/add-employee",element:<Signup/>}
+])
+
 
 function App() {
   return (
