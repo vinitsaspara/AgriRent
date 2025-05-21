@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant.js';
