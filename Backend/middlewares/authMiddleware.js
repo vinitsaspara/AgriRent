@@ -1,21 +1,29 @@
 import jwt from "jsonwebtoken";
+import { User } from "../models/user.model.js"; // import User model
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
-    // Corrected cookies access
     const token = req.cookies?.token;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized: Token missing", success: false });
     }
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!decode) {
-      return res.status(401).json({ message: "Unauthorized: Token invalid", success: false });
+    if (!decoded) {
+      return res.status(401).json({ message: "Unauthorized: Invalid token", success: false });
     }
 
-    req.id = decode.userId;
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    req.user = user; // ✅ Attach full user info
+    req.id = decoded.userId;
+
     next();
   } catch (error) {
     console.log("AUTH_MIDDLEWARE :: ", error);
