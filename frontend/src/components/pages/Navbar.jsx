@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, setUser } from "../../redux/slices/userSlice";
