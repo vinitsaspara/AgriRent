@@ -13,8 +13,6 @@ export function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // console.log("dfsdf");
-
     try {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, {
         withCredentials: true,
@@ -31,61 +29,68 @@ export function Navbar() {
   };
 
   return (
-   <nav className="bg-gray-800 p-4 shadow-md">
-  <div className="container mx-auto flex justify-between items-center">
-    {/* Left Side - Logo and Home + AllEmployee */}
-    <div className="flex items-center space-x-6">
-      <div
-        onClick={() => navigate("/")}
-        className="text-white hover:cursor-pointer text-lg font-semibold"
-      >
-        AgriRent
-      </div>
-      <a href="/" className="text-gray-300 hover:text-white">
-        Home
-      </a>
+    <nav className="bg-gray-800 p-4 shadow-md">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Left Side - Logo and Home + AllEmployee */}
+        <div className="flex items-center space-x-6">
+          <div
+            onClick={() => navigate("/")}
+            className="text-white hover:cursor-pointer text-lg font-semibold"
+          >
+            AgriRent
+          </div>
+          <a href="/" className="text-gray-300 hover:text-white">
+            Home
+          </a>
 
-      {/* AllEmployee only if Admin */}
-      {user?.role === "Admin" && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-          onClick={() => navigate("/admin/all-employee")}
-          className="text-gray-300 hover:text-white cursor-pointer"
-        >
-          AllEmployee
-        </button>
-        <button
-          onClick={() => navigate("/admin/all-equipment")}
-          className="text-gray-300 hover:text-white cursor-pointer"
-        >
-          AllEquipment
-        </button>
+          {/* AllEmployee & AllEquipment only if Admin */}
+          {user?.role === "Admin" && (
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => navigate("/admin/all-employee")}
+                className="text-gray-300 hover:text-white cursor-pointer"
+              >
+                AllEmployee
+              </button>
+              <button
+                onClick={() => navigate("/admin/all-equipment")}
+                className="text-gray-300 hover:text-white cursor-pointer"
+              >
+                AllEquipment
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
 
-    {/* Right Side - Auth */}
-    <div className="flex items-center space-x-6">
-      {!user ? (
-        <>
-          <a href="/login" className="text-gray-300 hover:text-white">
-            Login
-          </a>
-          <a href="/signup" className="text-gray-300 hover:text-white">
-            Signup
-          </a>
-        </>
-      ) : (
-        <button
-          onClick={handleLogout}
-          className="text-gray-300 hover:text-white cursor-pointer"
-        >
-          Logout
-        </button>
-      )}
-    </div>
-  </div>
-</nav>
-
+        {/* Right Side - Auth */}
+        <div className="flex items-center space-x-6">
+          {!user ? (
+            <>
+              <a href="/login" className="text-gray-300 hover:text-white">
+                Login
+              </a>
+              <a href="/signup" className="text-gray-300 hover:text-white">
+                Signup
+              </a>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/user/profile/" + user.userId)}
+                className="text-gray-300 hover:text-white cursor-pointer"
+              >
+                Profile
+              </button>
+              <button
+                onClick={handleLogout}
+                className="text-gray-300 hover:text-white cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }

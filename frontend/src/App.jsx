@@ -8,6 +8,7 @@ import AllMembers from "./components/admin/AllMembers";
 import AllEquipment from "./components/admin/AllEquipment";
 import AddEquipment from "./components/admin/AddEquipment";
 import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
+import Profile from "./components/pages/ProfilePage";
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -20,6 +21,7 @@ const appRouter = createBrowserRouter([
   { path: "/admin/add-equipment", element: <AddEquipment /> },
   { path: "/admin/all-equipment", element: <AllEquipment /> },
   { path: "/admin/equipment-details/:id", element: <DetailsOfEquipment /> },
+  {path:"/user/profile/:id", element: <Profile />},
 ]);
 
 function App() {
