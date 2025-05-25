@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import axios from "axios";
 import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
@@ -9,7 +10,9 @@ import useGetAllUsers from "@/hooks/useGetAllUsers";
 const AddEquipment = () => {
   useGetAllUsers(); // ✅ call the custom hook to fetch users
 
-  const { users } = useSelector((state) => state.user.allUsers);
+  const allUsers = useSelector((state) => state.user.allUsers || {});
+const users = allUsers.users || [];
+
   const navigate = useNavigate();
 
   // ✅ Example: filter all users with role !== 'admin'

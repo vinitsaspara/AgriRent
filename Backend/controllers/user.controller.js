@@ -165,3 +165,74 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Get userId from authenticated user
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User ID missing",
+      });
+    }
+
+    // Destructure the fields you want to allow updating
+    const { fullName, address, age, phoneNumber, profilePicture } = req.body;
+
+    // Validate required fields (optional: you can adjust validations as needed)
+    if (!fullName || !address || !age || !phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "fullName, address, age, and phoneNumber are required",
+      });
+    }
+
+    // Find the user by userId
+    const user = await User.findOne({ userId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update user fields
+    user.fullName = fullName;
+    user.address = address;
+    user.age = age;
+    user.phoneNumber = phoneNumber;
+
+    // Update profilePicture if provided, else keep existing
+    if (profilePicture) {
+      user.profilePicture = profilePicture;
+    }
+
+    // Save updated user
+    const updatedUser = await user.save();
+
+    // Return updated user data (without password)
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      updatedUser: {
+        _id: updatedUser._id,
+        userId: updatedUser.userId,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        phoneNumber: updatedUser.phoneNumber,
+        age: updatedUser.age,
+        address: updatedUser.address,
+        profilePicture: updatedUser.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
