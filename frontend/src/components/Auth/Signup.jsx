@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../pages/Navbar";
 
+// ... existing code ...
 export function Signup() {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -32,45 +33,18 @@ export function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await axios.post(`${USER_API_END_POINT}/signup`, formData, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-
-      if (res.data.success) {
-        toast.success(user?.role === "Admin" ? "Member Added ✅" : "User Registered ✅");
-
-        if (!user) {
-          navigate("/login");
-        } else if (user.role === "Admin") {
-          navigate("/admin/all-employee");
-        } else {
-          navigate("/");
-        }
-      } else {
-        toast.error(res.data.message);
-      }
-    } catch (err) {
-      console.error("Signup error:", err.response?.data || err.message);
-      toast.error(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
+// ... existing code ...
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
       <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="w-full max-w-md bg-white rounded-md shadow-md p-6">
-          <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">
-            {user ? "Add Member" : "Sign Up"}
+      <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-2xl">
+          <h1 className="mt-6 text-center text-3xl font-extrabold text-emerald-800">
+            {user ? "Add Member" : "Sign Up for AgriRent"}
           </h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <input
               type="text"
               name="userId"
@@ -78,7 +52,7 @@ export function Signup() {
               value={formData.userId}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
             <input
               type="text"
@@ -87,7 +61,7 @@ export function Signup() {
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
             <input
               type="email"
@@ -96,7 +70,7 @@ export function Signup() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
             <input
               type="password"
@@ -105,7 +79,7 @@ export function Signup() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
             <textarea
               name="address"
@@ -113,7 +87,7 @@ export function Signup() {
               value={formData.address}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md resize-none focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md resize-none"
             />
             <input
               type="number"
@@ -122,7 +96,7 @@ export function Signup() {
               value={formData.age}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
             <input
               type="text"
@@ -131,7 +105,7 @@ export function Signup() {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
 
             {user?.role === "Admin" && (
@@ -140,7 +114,7 @@ export function Signup() {
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-400"
+                className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 bg-white placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
               >
                 <option value="">Select Role</option>
                 <option value="State Employee">State Employee</option>
@@ -153,13 +127,19 @@ export function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-2 rounded-md transition-colors ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 ${ 
+                loading ? "bg-gray-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               }`}
             >
               {user ? "Add Member" : "Sign Up"}
             </button>
           </form>
+           <p className="mt-4 text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <a href="/login" className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline">
+              Sign in here
+            </a>
+          </p>
         </div>
       </div>
     </div>
@@ -167,3 +147,5 @@ export function Signup() {
 }
 
 export default Signup;
+
+
