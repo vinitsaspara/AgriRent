@@ -1,3 +1,5 @@
+import cloudinary from '../config/cloudinary.js';
+import getDataUri from '../config/getDataUri.js';
 import { Equipment } from '../models/equipment.model.js'; // ensure correct import
 
 export const addEquipment = async (req, res) => {
@@ -14,9 +16,10 @@ export const addEquipment = async (req, res) => {
             currentAssignedTo,
             assignedRole,
             availabilityStatus,
-            quantity,
-            image
+            quantity
         } = req.body;
+
+        const file = req.file;
 
         // Check all required fields
         if (
@@ -38,6 +41,11 @@ export const addEquipment = async (req, res) => {
                 success: false,
             });
         }
+
+        const fileUri = getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+        const imageUri = cloudResponse.secure_url;
 
         // ✅ FIX: Await the database call
         const existEquipment = await Equipment.findOne({ serialNumber });
@@ -61,7 +69,7 @@ export const addEquipment = async (req, res) => {
             currentAssignedTo,
             assignedRole,
             availabilityStatus,
-            image,
+            image: imageUri,
             quantity,
         });
 
@@ -88,6 +96,8 @@ export const updateEquipment = async (req, res) => {
         const { id } = req.params; // Equipment ID from route
         const updates = req.body;
 
+        const file = req.file; // Assuming you're using multer to handle file upload
+
         // Define allowed fields to update
         const allowedFields = [
             "description",
@@ -98,7 +108,6 @@ export const updateEquipment = async (req, res) => {
             "taluka",
             "currentAssignedTo",
             "assignedRole",
-            "image"
         ];
 
         // Filter updates to allow only permitted fields
@@ -107,6 +116,13 @@ export const updateEquipment = async (req, res) => {
             if (updates[key] !== undefined) {
                 filteredUpdates[key] = updates[key];
             }
+        }
+
+        // If file is uploaded, update the image
+        if (file) {
+            const fileUri = getDataUri(file);
+            const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+            filteredUpdates.image = cloudResponse.secure_url;
         }
 
         const updatedEquipment = await Equipment.findByIdAndUpdate(
@@ -137,7 +153,6 @@ export const updateEquipment = async (req, res) => {
         });
     }
 };
-
 
 
 export const deleteEquipment = async (req, res) => {
@@ -176,7 +191,7 @@ export const getAllEquipment = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "All equipment fetched successfully",
-            data: equipmentList,
+            equipmentList,
         });
 
     } catch (error) {

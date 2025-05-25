@@ -1,6 +1,7 @@
 // redux/store.js
 import { configureStore } from "@reduxjs/toolkit";
 import userSlice from "./slices/userSlice.js";
+import equipmentSlice from "./slices/equipmentSlice.js";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
@@ -12,11 +13,12 @@ const persistConfig = {
 };
 
 // Wrap your reducer with persistReducer
-const persistedReducer = persistReducer(persistConfig, userSlice);
+const userPersistedReducer = persistReducer(persistConfig, userSlice);
 
 const store = configureStore({
   reducer: {
-    user: persistedReducer
+    user: userPersistedReducer,
+    equipment : equipmentSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
