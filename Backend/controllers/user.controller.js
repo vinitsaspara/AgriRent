@@ -55,6 +55,7 @@ export const signUp = async (req, res) => {
     }
 }
 
+
 export const login = async (req, res) => {
     try {
 
@@ -120,6 +121,8 @@ export const login = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", success: false });
     }
 }
+
+
 export const logout = async (req, res) => {
     try {
         return res.status(200).cookie("token", null, {
@@ -135,3 +138,30 @@ export const logout = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", success: false });
     }
 }
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find(); // Fetch all users
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No users found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      users,
+    });
+    
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching users",
+      error: error.message,
+    });
+  }
+};
