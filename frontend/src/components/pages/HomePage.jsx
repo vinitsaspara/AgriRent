@@ -27,7 +27,7 @@ const HomePage = () => {
           </div>
           <div className="md:w-1/2">
             <img 
-              src="https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+              src="https://upload.wikimedia.org/wikipedia/commons/0/08/Agricultural_machinery.jpg" 
               alt="Modern tractor in field" 
               className="rounded-lg shadow-xl w-full h-auto object-cover"
             />
