@@ -9,6 +9,8 @@ import AllEquipment from "./components/admin/AllEquipment";
 import AddEquipment from "./components/admin/AddEquipment";
 import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
 import Profile from "./components/pages/ProfilePage";
+import DetailsOfMember from "./components/admin/DetailsOfMember";
+import UpdateMember from "./components/admin/UpdateMember";
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -21,6 +23,8 @@ const appRouter = createBrowserRouter([
   { path: "/admin/add-equipment", element: <AddEquipment /> },
   { path: "/admin/all-equipment", element: <AllEquipment /> },
   { path: "/admin/equipment-details/:id", element: <DetailsOfEquipment /> },
+  { path: "/admin/member-details/:id", element: <DetailsOfMember /> },
+  { path: "/admin/member-update/:id", element: <UpdateMember /> },
   {path:"/user/profile/:id", element: <Profile />},
 ]);
 

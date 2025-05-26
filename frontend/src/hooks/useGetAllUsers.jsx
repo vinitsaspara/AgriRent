@@ -22,7 +22,7 @@ const useGetAllUsers = () => {
       }
     };
     fetchAllUsres();
-  }, []);
+  }, [dispetch]);
 };
 
 export default useGetAllUsers;

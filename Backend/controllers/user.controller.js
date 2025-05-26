@@ -3,140 +3,140 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 export const signUp = async (req, res) => {
-    try {
-        const { userId, fullName, email, password, role, age, phoneNumber, address } = req.body;
+  try {
+    const { userId, fullName, email, password, role, age, phoneNumber, address } = req.body;
 
-        console.log(userId, fullName, email, password, role, age, phoneNumber, address);
+    console.log(userId, fullName, email, password, role, age, phoneNumber, address);
 
 
-        if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address) {
-            return res.status(400).json({
-                message: "All fields are required.",
-                success: false
-            })
-        }
-
-        const existEmail = await User.findOne({ email });
-
-        const existuserId = await User.findOne({ userId });
-
-        if (existEmail || existuserId) {
-            return res.status(400).json({
-                message: "User alredy exist",
-                success: false
-            });
-        }
-
-        const hashPassword = await bcrypt.hash(password, 10);
-
-        if(req.user && req.user.role === "Admin"){
-            role = req.body;
-        }
-
-        await User.create({
-            userId,
-            fullName,
-            email,
-            password: hashPassword,
-            address,
-            role,
-            age,
-            phoneNumber
-        })
-
-        return res.status(201).json({
-            message: 'User registered successfully!',
-            success: true
-        });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal server error", success: false });
+    if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address) {
+      return res.status(400).json({
+        message: "All fields are required.",
+        success: false
+      })
     }
+
+    const existEmail = await User.findOne({ email });
+
+    const existuserId = await User.findOne({ userId });
+
+    if (existEmail || existuserId) {
+      return res.status(400).json({
+        message: "User alredy exist",
+        success: false
+      });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    if (req.user && req.user.role === "Admin") {
+      role = req.body;
+    }
+
+    await User.create({
+      userId,
+      fullName,
+      email,
+      password: hashPassword,
+      address,
+      role,
+      age,
+      phoneNumber
+    })
+
+    return res.status(201).json({
+      message: 'User registered successfully!',
+      success: true
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
+  }
 }
 
 
 export const login = async (req, res) => {
-    try {
+  try {
 
-        const { userId, password } = req.body;
+    const { userId, password } = req.body;
 
-        if (!userId || !password) {
-            return res.status(400).json({
-                message: "All fields are required.",
-                success: false
-            })
-        }
-
-        const user = await User.findOne({ userId: { $regex: new RegExp(`^${userId}$`, "i") } });
-
-        if (!user) {
-            return res.status(400).json({
-                message: "Invalid userId or Password.",
-                success: false
-            })
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-            return res.status(400).json({
-                message: "Invalid userId or Password.",
-                success: false
-            })
-        }
-
-        const token = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "1d" }
-        )
-
-        const userData = {
-            _id: user.id,
-            userId: user.userId,
-            fullname: user.fullName,
-            email: user.email,
-            password: user.password,
-            role: user.role,
-            phoneNumber: user.phoneNumber,
-            age: user.age,
-            address: user.address,
-            profilePicture: user.profilePicture
-        }
-
-        return res.status(200).cookie("token", token, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000,
-            sameSite: "strict",
-        }).json({
-            message: `Welcome back ${userData.fullname}`,
-            user: userData,
-            success: true,
-        })
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error", success: false });
+    if (!userId || !password) {
+      return res.status(400).json({
+        message: "All fields are required.",
+        success: false
+      })
     }
+
+    const user = await User.findOne({ userId: { $regex: new RegExp(`^${userId}$`, "i") } });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid userId or Password.",
+        success: false
+      })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: "Invalid userId or Password.",
+        success: false
+      })
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    )
+
+    const userData = {
+      _id: user.id,
+      userId: user.userId,
+      fullname: user.fullName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      phoneNumber: user.phoneNumber,
+      age: user.age,
+      address: user.address,
+      profilePicture: user.profilePicture
+    }
+
+    return res.status(200).cookie("token", token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+    }).json({
+      message: `Welcome back ${userData.fullname}`,
+      user: userData,
+      success: true,
+    })
+
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
+  }
 }
 
 
 export const logout = async (req, res) => {
-    try {
-        return res.status(200).cookie("token", null, {
-            httpOnly: true,
-            maxAge: 0,
-            sameSite: "strict",
-        }).json({
-            message: "Logout successfully",
-            success: true
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error", success: false });
-    }
+  try {
+    return res.status(200).cookie("token", null, {
+      httpOnly: true,
+      maxAge: 0,
+      sameSite: "strict",
+    }).json({
+      message: "Logout successfully",
+      success: true
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
+  }
 }
 
 export const getAllUsers = async (req, res) => {
@@ -155,7 +155,7 @@ export const getAllUsers = async (req, res) => {
       message: "Users fetched successfully",
       users,
     });
-    
+
   } catch (error) {
     console.error("Error fetching users:", error);
     return res.status(500).json({
@@ -235,4 +235,77 @@ export const updateProfile = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+
+export const updateMember = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId, password } = req.body;
+
+    if (!userId || !password) {
+      return res.status(400).json({
+        message: "All fields are required.",
+        success: false
+      })
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User does not exist",
+        success: false
+      });
+    }
+
+    // Update fields only if provided
+    if (userId) user.userId = userId;
+    if (password) {
+      const hashPassword = await bcrypt.hash(password, 10);
+      user.password = hashPassword;
+    }
+
+    await user.save(); // Don't forget to save the changes
+
+    return res.status(200).json({
+      message: 'User updated successfully!',
+      success: true
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
+  }
+};
+
+export const deleteMember = async (req, res) => {
+    try {
+        const { id } = req.params; // Equipment ID from URL
+
+        const deleteEmployee = await User.findByIdAndDelete(id);
+
+        if (!deleteEmployee) {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Employee removed successfully",
+        });
+
+    } catch (error) {
+        console.error("Error deleting equipment:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error while deleting equipment",
+            error: error.message,
+        });
+    }
 };
