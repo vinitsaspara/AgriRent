@@ -9,6 +9,8 @@ const AllEquipment = () => {
   userGetAllEquipment();
 
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
+  
 
   const { equipmentList } = useSelector(
     (state) => state.equipment?.allEquipment || {}
@@ -18,12 +20,14 @@ const AllEquipment = () => {
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
       <Navbar />
       <div className="flex justify-end p-4 md:p-6">
-        <Button
-          onClick={() => navigate("/admin/add-equipment")}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
-        >
-          Add Equipment
-        </Button>
+        {user && user.role === "Admin" && (
+          <Button
+            onClick={() => navigate("/admin/add-equipment")}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
+          >
+            Add Equipment
+          </Button>
+        )}
       </div>
 
       {equipmentList && equipmentList.length > 0 ? (
