@@ -33,7 +33,31 @@ export function Signup() {
   };
 
   const handleSubmit = async (e) => {
-// ... existing code ...
+
+    e.preventDefault();
+    
+
+    try {
+      setLoading(true)
+      const res = await axios.post(`${USER_API_END_POINT}/signup`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      console.log(res.data.success);
+      
+
+      if(res.data.success){
+        navigate("/admin/all-employee");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setLoading(false)
+    }
   };
 
   return (
@@ -127,19 +151,26 @@ export function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 ${ 
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 shadow-lg hover:shadow-xl transform cursor-pointer hover:scale-105 active:scale-95 ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               }`}
             >
               {user ? "Add Member" : "Sign Up"}
             </button>
           </form>
-           <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <a href="/login" className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline">
+          {
+            !user && <p className="mt-4 text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="font-medium text-emerald-600 hover:text-emerald-500 hover:underline"
+            >
               Sign in here
             </a>
           </p>
+          }
         </div>
       </div>
     </div>
@@ -147,5 +178,3 @@ export function Signup() {
 }
 
 export default Signup;
-
-

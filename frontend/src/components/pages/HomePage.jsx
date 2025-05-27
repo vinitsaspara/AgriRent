@@ -1,7 +1,11 @@
 import React from 'react'
 import { Navbar } from './Navbar'
+import { useNavigate } from 'react-router-dom'
 
 const HomePage = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar/>
@@ -17,10 +21,11 @@ const HomePage = () => {
               Access premium farming equipment without the premium price tag
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-md transition-colors">
+              <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-md cursor-pointer transition-colors"
+              onClick={()=>navigate("/admin/all-equipment")}>
                 Browse Equipment
               </button>
-              <button className="border border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-medium py-3 px-6 rounded-md transition-colors">
+              <button className="border border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-medium py-3 px-6 rounded-md transition-colors cursor-pointer">
                 How It Works
               </button>
             </div>
@@ -42,10 +47,13 @@ const HomePage = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Category 1 */}
-            <div className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
+            <div
+            onClick={()=>navigate("/admin/all-equipment")}
+            className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
               <img 
                 src="https://images.unsplash.com/photo-1589923188651-268a9765e432?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80" 
                 alt="Tractor" 
+                
                 className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
@@ -58,10 +66,13 @@ const HomePage = () => {
             </div>
             
             {/* Category 2 */}
-            <div className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/admin/all-equipment")}
+            className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
               <img 
                 src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" 
                 alt="Harvester" 
+               
                 className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
@@ -74,10 +85,13 @@ const HomePage = () => {
             </div>
             
             {/* Category 3 */}
-            <div className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/admin/all-equipment")}
+            className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
               <img 
                 src="https://images.unsplash.com/photo-1621628898826-8956e10449eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" 
                 alt="Irrigation" 
+                
                 className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
@@ -90,10 +104,14 @@ const HomePage = () => {
             </div>
             
             {/* Category 4 */}
-            <div className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/admin/all-equipment")}
+            
+            className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer">
               <img 
                 src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" 
                 alt="Seeders" 
+                
                 className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">

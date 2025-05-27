@@ -6,7 +6,7 @@ export const signUp = async (req, res) => {
   try {
     const { userId, fullName, email, password, role, age, phoneNumber, address } = req.body;
 
-    console.log(userId, fullName, email, password, role, age, phoneNumber, address);
+    // console.log(userId, fullName, email, password, role, age, phoneNumber, address);
 
 
     if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address) {
