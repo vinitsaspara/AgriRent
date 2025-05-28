@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import cloudinary from "../config/cloudinary.js";
+import getDataUri from "../config/getDataUri.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -95,7 +97,7 @@ export const login = async (req, res) => {
     const userData = {
       _id: user.id,
       userId: user.userId,
-      fullname: user.fullName,
+      fullName: user.fullName,
       email: user.email,
       password: user.password,
       role: user.role,
@@ -168,7 +170,7 @@ export const getAllUsers = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req.user.userId; // Get userId from authenticated user
+    const userId = req.user.userId;
 
     if (!userId) {
       return res.status(401).json({
@@ -177,10 +179,8 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Destructure the fields you want to allow updating
-    const { fullName, address, age, phoneNumber, profilePicture } = req.body;
+    const { fullName, address, age, phoneNumber } = req.body;
 
-    // Validate required fields (optional: you can adjust validations as needed)
     if (!fullName || !address || !age || !phoneNumber) {
       return res.status(400).json({
         success: false,
@@ -188,7 +188,6 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Find the user by userId
     const user = await User.findOne({ userId });
     if (!user) {
       return res.status(404).json({
@@ -197,25 +196,36 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Update user fields
+    // Default: retain existing image
+    let imageUri = user.profilePicture;
+
+    if (req.file) {
+      try {
+        const fileUri = getDataUri(req.file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        imageUri = cloudResponse.secure_url;
+      } catch (uploadError) {
+        console.error("Cloudinary upload failed:", uploadError);
+        return res.status(500).json({
+          success: false,
+          message: "Image upload failed",
+        });
+      }
+    }
+
+    // Update fields
     user.fullName = fullName;
     user.address = address;
     user.age = age;
     user.phoneNumber = phoneNumber;
+    user.profilePicture = imageUri;
 
-    // Update profilePicture if provided, else keep existing
-    if (profilePicture) {
-      user.profilePicture = profilePicture;
-    }
-
-    // Save updated user
     const updatedUser = await user.save();
 
-    // Return updated user data (without password)
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      updatedUser: {
+      user: {
         _id: updatedUser._id,
         userId: updatedUser.userId,
         fullName: updatedUser.fullName,
@@ -236,6 +246,7 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 
 export const updateMember = async (req, res) => {
@@ -283,29 +294,29 @@ export const updateMember = async (req, res) => {
 };
 
 export const deleteMember = async (req, res) => {
-    try {
-        const { id } = req.params; // Equipment ID from URL
+  try {
+    const { id } = req.params; // Equipment ID from URL
 
-        const deleteEmployee = await User.findByIdAndDelete(id);
+    const deleteEmployee = await User.findByIdAndDelete(id);
 
-        if (!deleteEmployee) {
-            return res.status(404).json({
-                success: false,
-                message: "Employee not found",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Employee removed successfully",
-        });
-
-    } catch (error) {
-        console.error("Error deleting equipment:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error while deleting equipment",
-            error: error.message,
-        });
+    if (!deleteEmployee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: "Employee removed successfully",
+    });
+
+  } catch (error) {
+    console.error("Error deleting equipment:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while deleting equipment",
+      error: error.message,
+    });
+  }
 };

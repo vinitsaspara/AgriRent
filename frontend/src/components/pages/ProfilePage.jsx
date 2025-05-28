@@ -2,8 +2,9 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "./Navbar";
+import { Button } from "../ui/button";
 
-const Profile = () => {
+const ProfilePage = () => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ const Profile = () => {
                 Full Name
               </label>
               <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
-                {user.fullname}
+                {user.fullName}
               </p>
             </div>
             <div>
@@ -96,6 +97,11 @@ const Profile = () => {
                 {user.role}
               </p>
             </div>
+            <div className="flex items-center justify-center">
+              <Button 
+              onClick={()=>navigate("/user/update-profile")}
+              className=" cursor-pointer">Update profile</Button>
+            </div>
           </div>
         </div>
       </div>
@@ -103,4 +109,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;

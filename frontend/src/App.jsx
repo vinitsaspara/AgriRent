@@ -8,9 +8,10 @@ import AllMembers from "./components/admin/AllMembers";
 import AllEquipment from "./components/admin/AllEquipment";
 import AddEquipment from "./components/admin/AddEquipment";
 import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
-import Profile from "./components/pages/ProfilePage";
 import DetailsOfMember from "./components/admin/DetailsOfMember";
 import UpdateMember from "./components/admin/UpdateMember";
+import ProfilePage from "./components/pages/ProfilePage";
+import UpdateProfile from "./components/pages/UpdateProfile";
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -25,7 +26,8 @@ const appRouter = createBrowserRouter([
   { path: "/admin/equipment-details/:id", element: <DetailsOfEquipment /> },
   { path: "/admin/member-details/:id", element: <DetailsOfMember /> },
   { path: "/admin/member-update/:id", element: <UpdateMember /> },
-  {path:"/user/profile/:id", element: <Profile />},
+  {path:"/user/profile", element: <ProfilePage />},
+  {path:"/user/update-profile", element: <UpdateProfile />},
 ]);
 
 function App() {

@@ -90,7 +90,7 @@ export function Navbar() {
           ) : (
             <>
               <button
-                onClick={() => navigate("/user/profile/" + user.userId)}
+                onClick={() => navigate("/user/profile")}
                 className="text-emerald-100 hover:text-white px-4 py-2 rounded-lg transition-all duration-300 hover:bg-emerald-700/50 flex items-center cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
