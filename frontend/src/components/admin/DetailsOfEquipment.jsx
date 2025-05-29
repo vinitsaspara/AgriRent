@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "../pages/Navbar";
+import { Button } from "../ui/button";
+import axios from "axios";
+import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
+import toast from "react-hot-toast";
 
 const DetailsOfEquipment = () => {
   const { id } = useParams();
   const { equipmentList } = useSelector(
     (state) => state.equipment?.allEquipment || {}
   );
+  const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const [equipment, setEquipment] = useState(null);
 
   useEffect(() => {
@@ -23,10 +29,32 @@ const DetailsOfEquipment = () => {
     return <div className="p-6 text-center">Loading equipment details...</div>;
   }
 
+  const removeHandler = async () => {
+    try {
+      const res = await axios.delete(
+        `${EQUIPMENT_API_END_POINT}/delete-equipment/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        navigate("/admin/all-equipment");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("equipment not remove");
+    }
+  };
+
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center mt-10">
+      <div className="flex p-3 justify-center mt-10">
         <Card className="w-full max-w-2xl shadow-xl border border-gray-200 p-6 rounded-xl">
           <CardContent>
             {/* Rounded Image */}
@@ -49,11 +77,16 @@ const DetailsOfEquipment = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <Detail label="Type" value={equipment.type} />
               <Detail label="Serial Number" value={equipment.serialNumber} />
-              <Detail label="Rent Per Hour" value={`₹${equipment.rentPerHour}`} />
+              <Detail
+                label="Rent Per Hour"
+                value={`₹${equipment.rentPerHour}`}
+              />
               <Detail label="Quantity" value={equipment.quantity} />
               <Detail label="Assigned Role" value={equipment.assignedRole} />
               <div>
-                <p className="text-sm font-medium text-gray-500">Availability</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Availability
+                </p>
                 <Badge
                   className={
                     equipment.availabilityStatus === "Available"
@@ -81,6 +114,20 @@ const DetailsOfEquipment = () => {
                 {equipment.description || "No description provided."}
               </p>
             </div>
+
+            {user?.role === "Admin" && (
+              <div className="flex items-center justify-center gap-5 mt-5">
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/admin/equipment-update/${id}`)}
+                >
+                  Update
+                </Button>
+                <Button className="cursor-pointer" onClick={removeHandler}>
+                  Remove
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

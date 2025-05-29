@@ -19,16 +19,6 @@ const equipmentSchema = new mongoose.Schema({
   district: { type: String, default: "-"},
   taluka: { type: String, default: "-" },
 
-  currentAssignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
-  },
-
-  assignedRole: {
-    type: String,
-    enum: ['Admin', 'StateEmployee', 'DistrictEmployee', 'TalukaEmployee', 'Farmer'],
-  },
-
   availabilityStatus: {
     type: String,
     enum: ['Available', 'Assigned', 'Rented', 'Under Maintenance'],

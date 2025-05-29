@@ -79,7 +79,7 @@ const AllEquipment = () => {
                   onClick={() =>
                     navigate(`/admin/equipment-details/${item._id}`)
                   }
-                  className="mt-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75"
+                  className="mt-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75 cursor-pointer"
                 >
                   View Details
                 </Button>

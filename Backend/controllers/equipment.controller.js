@@ -1,6 +1,7 @@
 import cloudinary from '../config/cloudinary.js';
 import getDataUri from '../config/getDataUri.js';
 import { Equipment } from '../models/equipment.model.js'; // ensure correct import
+import { User } from '../models/user.model.js';
 
 export const addEquipment = async (req, res) => {
     try {
@@ -13,8 +14,6 @@ export const addEquipment = async (req, res) => {
             state,
             district,
             taluka,
-            currentAssignedTo,
-            assignedRole,
             availabilityStatus,
             quantity
         } = req.body;
@@ -32,8 +31,6 @@ export const addEquipment = async (req, res) => {
             !state ||
             !district ||
             !taluka ||
-            !currentAssignedTo ||
-            !assignedRole ||
             !availabilityStatus
         ) {
             return res.status(400).json({
@@ -66,8 +63,6 @@ export const addEquipment = async (req, res) => {
             state,
             district,
             taluka,
-            currentAssignedTo,
-            assignedRole,
             availabilityStatus,
             image: imageUri,
             quantity,
@@ -91,68 +86,101 @@ export const addEquipment = async (req, res) => {
 };
 
 
+
 export const updateEquipment = async (req, res) => {
-    try {
-        const { id } = req.params; // Equipment ID from route
-        const updates = req.body;
+  try {
+    const { id } = req.params;
+    const {
+      description,
+      rentPerHour,
+      quantity,
+      state,
+      district,
+      taluka,
+      availabilityStatus,
+    } = req.body;
 
-        const file = req.file; // Assuming you're using multer to handle file upload
+    const file = req.file;
 
-        // Define allowed fields to update
-        const allowedFields = [
-            "description",
-            "rentPerHour",
-            "availabilityStatus",
-            "state",
-            "district",
-            "taluka",
-            "currentAssignedTo",
-            "assignedRole",
-        ];
-
-        // Filter updates to allow only permitted fields
-        const filteredUpdates = {};
-        for (let key of allowedFields) {
-            if (updates[key] !== undefined) {
-                filteredUpdates[key] = updates[key];
-            }
-        }
-
-        // If file is uploaded, update the image
-        if (file) {
-            const fileUri = getDataUri(file);
-            const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-            filteredUpdates.image = cloudResponse.secure_url;
-        }
-
-        const updatedEquipment = await Equipment.findByIdAndUpdate(
-            id,
-            { $set: filteredUpdates },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedEquipment) {
-            return res.status(404).json({
-                success: false,
-                message: "Equipment not found",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Equipment updated successfully",
-            data: updatedEquipment,
-        });
-
-    } catch (error) {
-        console.error("Error updating equipment:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error while updating equipment",
-            error: error.message,
-        });
+    if (
+      !description ||
+      !rentPerHour ||
+      !quantity ||
+      !state ||
+      !district ||
+      !taluka ||
+      !availabilityStatus
+    ) {
+      return res.status(400).json({
+        message: "All fields are required.",
+        success: false,
+      });
     }
+
+    const equipment = await Equipment.findById(id); // ✅ FIXED: use await
+    if (!equipment) {
+      return res.status(404).json({
+        message: "Equipment does not exist.",
+        success: false,
+      });
+    }
+
+    let imageUri = equipment.image;
+
+    if (file) {
+      try {
+        const fileUri = getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        imageUri = cloudResponse.secure_url;
+      } catch (uploadError) {
+        console.error("Cloudinary upload failed:", uploadError);
+        return res.status(500).json({
+          success: false,
+          message: "Image upload failed",
+        });
+      }
+    }
+
+    // Update fields
+    equipment.description = description;
+    equipment.rentPerHour = rentPerHour;
+    equipment.quantity = quantity;
+    equipment.state = state;
+    equipment.district = district;
+    equipment.taluka = taluka;
+    equipment.availabilityStatus = availabilityStatus;
+    equipment.image = imageUri;
+
+    const updatedEquipment = await equipment.save(); // ✅ FIXED: save the document instance
+
+    return res.status(200).json({
+      success: true,
+      message: "Equipment updated successfully",
+      equipment: {
+        _id: updatedEquipment._id,
+        name: updatedEquipment.name,
+        type: updatedEquipment.type,
+        serialNumber: updatedEquipment.serialNumber,
+        description: updatedEquipment.description,
+        rentPerHour: updatedEquipment.rentPerHour,
+        quantity: updatedEquipment.quantity,
+        state: updatedEquipment.state,
+        district: updatedEquipment.district,
+        taluka: updatedEquipment.taluka,
+        availabilityStatus: updatedEquipment.availabilityStatus,
+        image: updatedEquipment.image,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 };
+
 
 
 export const deleteEquipment = async (req, res) => {
@@ -185,21 +213,20 @@ export const deleteEquipment = async (req, res) => {
 };
 
 export const getAllEquipment = async (req, res) => {
-    try {
-        const equipmentList = await Equipment.find().populate('currentAssignedTo', 'name role');
+  try {
+    const equipmentList = await Equipment.find();
 
-        return res.status(200).json({
-            success: true,
-            message: "All equipment fetched successfully",
-            equipmentList,
-        });
-
-    } catch (error) {
-        console.error("Error fetching equipment:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error while fetching equipment",
-            error: error.message,
-        });
-    }
+    return res.status(200).json({
+      success: true,
+      message: "All equipment fetched successfully",
+      equipmentList,
+    });
+  } catch (error) {
+    console.error("Error fetching equipment:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching equipment",
+      error: error.message,
+    });
+  }
 };

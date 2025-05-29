@@ -57,7 +57,6 @@ export const signUp = async (req, res) => {
   }
 }
 
-
 export const login = async (req, res) => {
   try {
 
@@ -112,7 +111,7 @@ export const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "strict",
     }).json({
-      message: `Welcome back ${userData.fullname}`,
+      message: `Welcome back ${userData.fullName}`,
       user: userData,
       success: true,
     })
@@ -123,7 +122,6 @@ export const login = async (req, res) => {
     return res.status(500).json({ message: "Internal server error", success: false });
   }
 }
-
 
 export const logout = async (req, res) => {
   try {
@@ -246,7 +244,6 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
-
 
 
 export const updateMember = async (req, res) => {

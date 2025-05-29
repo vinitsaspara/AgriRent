@@ -143,7 +143,7 @@ export function Signup() {
                 <option value="">Select Role</option>
                 <option value="State Employee">State Employee</option>
                 <option value="District Employee">District Employee</option>
-                <option value="Taluka employee">Taluka employee</option>
+                <option value="Taluka employee">Taluka Employee</option>
                 <option value="Farmer">Farmer</option>
               </select>
             )}
@@ -151,9 +151,9 @@ export function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 shadow-lg hover:shadow-xl transform cursor-pointer hover:scale-105 active:scale-95 ${
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium cursor-pointer rounded-md text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 ${
                 loading
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-gray-400 cursor-not-allowed "
                   : "bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               }`}
             >
