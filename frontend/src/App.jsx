@@ -12,6 +12,7 @@ import DetailsOfMember from "./components/admin/DetailsOfMember";
 import UpdateMember from "./components/admin/UpdateMember";
 import ProfilePage from "./components/pages/ProfilePage";
 import UpdateProfile from "./components/pages/UpdateProfile";
+import UpdateEquipment from "./components/admin/UpdateEquipment";
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -26,6 +27,7 @@ const appRouter = createBrowserRouter([
   { path: "/admin/equipment-details/:id", element: <DetailsOfEquipment /> },
   { path: "/admin/member-details/:id", element: <DetailsOfMember /> },
   { path: "/admin/member-update/:id", element: <UpdateMember /> },
+  { path: "/admin/equipment-update/:id", element: <UpdateEquipment /> },
   {path:"/user/profile", element: <ProfilePage />},
   {path:"/user/update-profile", element: <UpdateProfile />},
 ]);
