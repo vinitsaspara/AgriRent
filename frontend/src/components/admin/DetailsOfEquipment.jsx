@@ -26,7 +26,7 @@ const DetailsOfEquipment = () => {
   }, [equipmentList, id]);
 
   if (!equipment) {
-    return <div className="p-6 text-center">Loading equipment details...</div>;
+    return <div className="p-6 text-center text-lg">Loading equipment details...</div>;
   }
 
   const removeHandler = async () => {
@@ -46,69 +46,52 @@ const DetailsOfEquipment = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error("equipment not remove");
+      console.error(error);
+      toast.error("Failed to remove equipment");
     }
   };
+
+  const badgeColor = {
+    Available: "bg-green-600",
+    Assigned: "bg-yellow-600",
+    Rented: "bg-blue-600",
+    "Under Maintenance": "bg-red-600",
+  }[equipment.availabilityStatus] || "bg-gray-500";
 
   return (
     <div>
       <Navbar />
-      <div className="flex p-3 justify-center mt-10">
-        <Card className="w-full max-w-2xl shadow-xl border border-gray-200 p-6 rounded-xl">
+      <div className="flex p-4 justify-center mt-10">
+        <Card className="w-full max-w-2xl shadow-lg border border-gray-200 p-6 rounded-2xl">
           <CardContent>
-            {/* Rounded Image */}
             {equipment.image && (
               <div className="flex justify-center mb-6">
                 <img
                   src={equipment.image}
                   alt={equipment.name}
-                  className="w-32 h-32 object-cover rounded-full border-4 border-blue-500 shadow-md"
+                  className="w-32 h-32 object-cover rounded-full border-4 border-blue-500 shadow"
                 />
               </div>
             )}
 
-            {/* Title */}
-            <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">
+            <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">
               {equipment.name}
             </h2>
 
-            {/* Grid Details */}
             <div className="grid grid-cols-2 gap-4 mb-6">
+              <Detail label="Category" value={equipment.category} />
               <Detail label="Type" value={equipment.type} />
               <Detail label="Serial Number" value={equipment.serialNumber} />
-              <Detail
-                label="Rent Per Hour"
-                value={`₹${equipment.rentPerHour}`}
-              />
-              <Detail label="Quantity" value={equipment.quantity} />
-              <Detail label="Assigned Role" value={equipment.assignedRole} />
+              <Detail label="Rent / Hour" value={`₹${equipment.rentPerHour}`} />
               <div>
-                <p className="text-sm font-medium text-gray-500">
-                  Availability
-                </p>
-                <Badge
-                  className={
-                    equipment.availabilityStatus === "Available"
-                      ? "bg-green-600"
-                      : "bg-red-600"
-                  }
-                >
-                  {equipment.availabilityStatus}
+                <p className="text-sm font-medium text-gray-500">Status</p>
+                <Badge className={badgeColor}>
+                  {equipment.status}
                 </Badge>
               </div>
             </div>
 
-            {/* Location */}
             <div className="mb-4">
-              <p className="text-sm font-medium text-gray-500">Location</p>
-              <p className="text-lg">
-                {equipment.taluka}, {equipment.district}, {equipment.state}
-              </p>
-            </div>
-
-            {/* Description */}
-            <div>
               <p className="text-sm font-medium text-gray-500">Description</p>
               <p className="text-base">
                 {equipment.description || "No description provided."}
@@ -116,14 +99,11 @@ const DetailsOfEquipment = () => {
             </div>
 
             {user?.role === "Admin" && (
-              <div className="flex items-center justify-center gap-5 mt-5">
-                <Button
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/admin/equipment-update/${id}`)}
-                >
+              <div className="flex justify-center gap-5 mt-6">
+                <Button onClick={() => navigate(`/admin/equipment-update/${id}`)}>
                   Update
                 </Button>
-                <Button className="cursor-pointer" onClick={removeHandler}>
+                <Button variant="destructive" onClick={removeHandler}>
                   Remove
                 </Button>
               </div>
@@ -135,11 +115,10 @@ const DetailsOfEquipment = () => {
   );
 };
 
-// Reusable detail component
 const Detail = ({ label, value }) => (
   <div>
     <p className="text-sm font-medium text-gray-500">{label}</p>
-    <p className="text-lg">{value}</p>
+    <p className="text-base">{value}</p>
   </div>
 );
 
