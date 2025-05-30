@@ -9,25 +9,14 @@ import useGetAllUsers from "@/hooks/useGetAllUsers";
 import toast from "react-hot-toast";
 
 const AddEquipment = () => {
-  useGetAllUsers();
-  const allUsers = useSelector((state) => state.user.allUsers || {});
-  const users = allUsers.users || [];
-  const filteredUsers = users?.filter((user) => user.role !== "Admin");
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: "",
-    type: "",
     serialNumber: "",
     description: "",
     rentPerHour: "",
-    state: "",
-    district: "",
-    taluka: "",
-    currentAssignedTo: "",
-    assignedRole: "",
-    availabilityStatus: "Available",
-    quantity: "",
+    status: "Available",
+    category: "",
   });
 
   const [image, setImage] = useState(null);
@@ -52,10 +41,14 @@ const AddEquipment = () => {
     if (image) data.append("file", image);
 
     try {
-      const res = await axios.post(`${EQUIPMENT_API_END_POINT}/add-equipment`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${EQUIPMENT_API_END_POINT}/add-equipment`,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
         toast.success(res.data.message || "Equipment added successfully!");
@@ -64,7 +57,9 @@ const AddEquipment = () => {
         toast.error(res.data.message || "Failed to add equipment.");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Server error, please try again.");
+      toast.error(
+        err.response?.data?.message || "Server error, please try again."
+      );
       console.error("Add equipment error:", err);
     } finally {
       setLoading(false);
@@ -80,46 +75,81 @@ const AddEquipment = () => {
       <Navbar />
       <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-2xl p-8 bg-white rounded-xl shadow-2xl space-y-6">
-          <h2 className="text-center text-3xl font-extrabold text-emerald-800">Add New Equipment</h2>
+          <h2 className="text-center text-3xl font-extrabold text-emerald-800">
+            Add New Equipment
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <input name="name" value={formData.name} onChange={handleChange} placeholder="Equipment Name" className={inputClass} required />
-              <select name="type" value={formData.type} onChange={handleChange} className={selectClass} required>
-                <option value="">Select Equipment Type</option>
-                <option value="Tractor">Tractor</option>
-                <option value="Harvester">Harvester</option>
-                <option value="Plough">Plough</option>
-                <option value="Seeder">Seeder</option>
-                <option value="Sprayer">Sprayer</option>
-                <option value="Other">Other</option>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Equipment Name"
+                className={inputClass}
+                required
+              />
+              <input
+                name="serialNumber"
+                value={formData.serialNumber}
+                onChange={handleChange}
+                placeholder="Serial Number"
+                className={inputClass}
+                required
+              />
+              <input
+                type="number"
+                name="rentPerHour"
+                value={formData.rentPerHour}
+                onChange={handleChange}
+                placeholder="Rent Per Hour (₹)"
+                className={inputClass}
+                required
+                min="0"
+              />
+
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className={selectClass}
+                required
+              >
+                <option value="">Select Category / શ્રેણી પસંદ કરો</option>
+                <option value="Tractor">Tractor / ટ્રેક્ટર</option>
+                <option value="Harvester">Harvester / કાપણી મશીન</option>
+                <option value="Plough">Plough / હલ</option>
+                <option value="Seeder">Seeder / બીજ વાવનાર</option>
+                <option value="Sprayer">Sprayer / છાંટક યંત્ર</option>
+                <option value="Cultivator">Cultivator / નિંદામણ યંત્ર</option>
+                <option value="Rotavator">Rotavator / રોટાવેટર</option>
+                <option value="Baler">Baler / ઘાસ બેલ મશીન</option>
+                <option value="Power Tiller">Power Tiller / પાવર ટિલર</option>
+                <option value="Transplanter">Transplanter / રોપણ યંત્ર</option>
+                <option value="Mulcher">Mulcher / ખેતરની ઘાસ યંત્ર</option>
+                <option value="Laser Leveler">
+                  Laser Leveler / લેસર લેવલર
+                </option>
+                <option value="Post Hole Digger">
+                  Post Hole Digger / ખાડો ખોદનાર
+                </option>
+                <option value="Fertilizer Spreader">
+                  Fertilizer Spreader / ખાતર છાંટનાર
+                </option>
+                <option value="Thresher">Thresher / થ્રેશર</option>
+                <option value="Other">Other / અન્ય</option>
               </select>
-              <input name="serialNumber" value={formData.serialNumber} onChange={handleChange} placeholder="Serial Number" className={inputClass} required />
-              <input type="number" name="rentPerHour" value={formData.rentPerHour} onChange={handleChange} placeholder="Rent Per Hour (₹)" className={inputClass} required min="0" />
-              <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className={inputClass} required />
-              <input name="district" value={formData.district} onChange={handleChange} placeholder="District" className={inputClass} required />
-              <input name="taluka" value={formData.taluka} onChange={handleChange} placeholder="Taluka" className={inputClass} required />
-              <input type="number" name="quantity" value={formData.quantity} onChange={handleChange} placeholder="Quantity" className={inputClass} required min="1" />
-              <select name="currentAssignedTo" value={formData.currentAssignedTo} onChange={handleChange} className={selectClass} required>
-                <option value="">Assign to User (ID)</option>
-                {filteredUsers.map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.userId} ({user.role})
-                  </option>
-                ))}
-              </select>
-              <select name="assignedRole" value={formData.assignedRole} onChange={handleChange} className={selectClass} required>
-                <option value="">Select Assigned Role</option>
-                <option value="Admin">Admin</option>
-                <option value="StateEmployee">State Employee</option>
-                <option value="DistrictEmployee">District Employee</option>
-                <option value="TalukaEmployee">Taluka Employee</option>
-                <option value="Farmer">Farmer</option>
-              </select>
-              <select name="availabilityStatus" value={formData.availabilityStatus} onChange={handleChange} className={selectClass} required>
-                <option value="Available">Available</option>
-                <option value="Assigned">Assigned</option>
-                <option value="Rented">Rented</option>
-                <option value="Under Maintenance">Under Maintenance</option>
+
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className={selectClass}
+                required
+              >
+                <option value="Available">Available / ઉપલબ્ધ</option>
+                <option value="Assigned">Assigned / ફાળવેલ</option>
+                <option value="Rented">Rented / ભાડે આપેલું</option>
+                <option value="Maintenance">Maintenance / મરામત હેઠળ</option>
               </select>
             </div>
 
@@ -133,7 +163,10 @@ const AddEquipment = () => {
             />
 
             <div>
-              <label htmlFor="file-upload" className="block text-sm font-medium text-emerald-700 mb-1">
+              <label
+                htmlFor="file-upload"
+                className="block text-sm font-medium text-emerald-700 mb-1"
+              >
                 Equipment Image
               </label>
               <input

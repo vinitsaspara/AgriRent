@@ -7,15 +7,11 @@ export const addEquipment = async (req, res) => {
     try {
         const {
             name,
-            type,
             serialNumber,
             description,
             rentPerHour,
-            state,
-            district,
-            taluka,
-            availabilityStatus,
-            quantity
+            status,
+            category,
         } = req.body;
 
         const file = req.file;
@@ -23,15 +19,11 @@ export const addEquipment = async (req, res) => {
         // Check all required fields
         if (
             !name ||
-            !quantity ||
-            !type ||
+            !category ||
             !serialNumber ||
             !description ||
             !rentPerHour ||
-            !state ||
-            !district ||
-            !taluka ||
-            !availabilityStatus
+            !status
         ) {
             return res.status(400).json({
                 message: "All fields are required.",
@@ -56,16 +48,12 @@ export const addEquipment = async (req, res) => {
 
         const newEquipment = new Equipment({
             name,
-            type,
             serialNumber,
             description,
             rentPerHour,
-            state,
-            district,
-            taluka,
-            availabilityStatus,
+            category,
             image: imageUri,
-            quantity,
+            status
         });
 
         await newEquipment.save();
@@ -93,11 +81,7 @@ export const updateEquipment = async (req, res) => {
     const {
       description,
       rentPerHour,
-      quantity,
-      state,
-      district,
-      taluka,
-      availabilityStatus,
+      status,
     } = req.body;
 
     const file = req.file;
@@ -105,11 +89,7 @@ export const updateEquipment = async (req, res) => {
     if (
       !description ||
       !rentPerHour ||
-      !quantity ||
-      !state ||
-      !district ||
-      !taluka ||
-      !availabilityStatus
+      !status
     ) {
       return res.status(400).json({
         message: "All fields are required.",
@@ -144,11 +124,7 @@ export const updateEquipment = async (req, res) => {
     // Update fields
     equipment.description = description;
     equipment.rentPerHour = rentPerHour;
-    equipment.quantity = quantity;
-    equipment.state = state;
-    equipment.district = district;
-    equipment.taluka = taluka;
-    equipment.availabilityStatus = availabilityStatus;
+    equipment.status = status;
     equipment.image = imageUri;
 
     const updatedEquipment = await equipment.save(); // ✅ FIXED: save the document instance
@@ -159,15 +135,11 @@ export const updateEquipment = async (req, res) => {
       equipment: {
         _id: updatedEquipment._id,
         name: updatedEquipment.name,
-        type: updatedEquipment.type,
+        category : updatedEquipment.category,
         serialNumber: updatedEquipment.serialNumber,
         description: updatedEquipment.description,
         rentPerHour: updatedEquipment.rentPerHour,
-        quantity: updatedEquipment.quantity,
-        state: updatedEquipment.state,
-        district: updatedEquipment.district,
-        taluka: updatedEquipment.taluka,
-        availabilityStatus: updatedEquipment.availabilityStatus,
+        status: updatedEquipment.status,
         image: updatedEquipment.image,
       },
     });

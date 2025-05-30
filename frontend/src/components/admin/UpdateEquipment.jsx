@@ -24,11 +24,7 @@ const UpdateEquipment = () => {
   const [formData, setFormData] = useState({
     description: "",
     rentPerHour: "",
-    quantity: "",
-    state: "",
-    district: "",
-    taluka: "",
-    availabilityStatus: "Available",
+    status: "Available",
     file: "",
   });
 
@@ -39,11 +35,7 @@ const UpdateEquipment = () => {
         setFormData({
           description: equipment.description || "",
           rentPerHour: equipment.rentPerHour || "",
-          quantity: equipment.quantity || "",
-          state: equipment.state || "",
-          district: equipment.district || "",
-          taluka: equipment.taluka || "",
-          availabilityStatus: equipment.availabilityStatus || "Available",
+          status: equipment.status || "Available",
           file: "",
         });
       }
@@ -64,11 +56,7 @@ const UpdateEquipment = () => {
     const data = new FormData();
     data.append("description", formData.description);
     data.append("rentPerHour", formData.rentPerHour);
-    data.append("quantity", formData.quantity);
-    data.append("state", formData.state);
-    data.append("district", formData.district);
-    data.append("taluka", formData.taluka);
-    data.append("availabilityStatus", formData.availabilityStatus);
+    data.append("status", formData.status);
 
     if (formData.file) {
       data.append("file", formData.file);
@@ -105,7 +93,8 @@ const UpdateEquipment = () => {
             placeholder="Description"
             value={formData.description}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded h-40"
+            required
           />
           <input
             type="number"
@@ -114,44 +103,14 @@ const UpdateEquipment = () => {
             value={formData.rentPerHour}
             onChange={handleChange}
             className="w-full p-2 border rounded"
-          />
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="state"
-            placeholder="State"
-            value={formData.state}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="district"
-            placeholder="District"
-            value={formData.district}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="taluka"
-            placeholder="Taluka"
-            value={formData.taluka}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
+            required
           />
           <select
-            name="availabilityStatus"
-            value={formData.availabilityStatus}
+            name="status"
+            value={formData.status}
             onChange={handleChange}
             className="w-full p-2 border rounded"
+            required
           >
             {availabilityOptions.map((status) => (
               <option key={status} value={status}>
