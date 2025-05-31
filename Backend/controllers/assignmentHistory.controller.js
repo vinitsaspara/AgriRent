@@ -116,8 +116,8 @@ export const getHistoryByEquipment = async (req, res) => {
         const { equipmentId } = req.params;
 
         const history = await AssignmentHistory.find({ equipment: equipmentId })
-            .populate("assignedTo", "name role")
-            .populate("assignedBy", "name role");
+            .populate("assignedTo", "fullName role")
+            .populate("assignedBy", "fullName role");
 
         res.status(200).json({ success: true, history });
     } catch (error) {
