@@ -99,12 +99,21 @@ const DetailsOfEquipment = () => {
             </div>
 
             {user?.role === "Admin" && (
-              <div className="flex justify-center gap-5 mt-6">
+              <div className="flex flex-wrap justify-center gap-4 mt-6">
                 <Button onClick={() => navigate(`/admin/equipment-update/${id}`)}>
                   Update
                 </Button>
                 <Button variant="destructive" onClick={removeHandler}>
                   Remove
+                </Button>
+                <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
+                  Assign Equipment
+                </Button>
+                <Button onClick={() => navigate(`/history-equipment/${id}`)}>
+                  View History
+                </Button>
+                 <Button onClick={() => navigate(`/return-equipment/${id}`)}>
+                  Return Equipment
                 </Button>
               </div>
             )}
