@@ -1,4 +1,4 @@
-import { AssignmentHistory } from "../models/assignmentHistory.model.js";
+import { AssignmentHistory } from "../models/assignment.model.js";
 import { Equipment } from "../models/equipment.model.js";
 import { User } from "../models/user.model.js";
 
