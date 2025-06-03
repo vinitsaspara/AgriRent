@@ -1,6 +1,10 @@
 // src/App.jsx
 import React from "react";
-import { createBrowserRouter, RouterProvider, useParams } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useParams,
+} from "react-router-dom";
 
 import HomePage from "./components/pages/HomePage";
 import Login from "./components/Auth/Login";
@@ -25,26 +29,11 @@ import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
 import DetailsOfMember from "./components/admin/DetailsOfMember";
 import UpdateMember from "./components/admin/UpdateMember";
 import UpdateEquipment from "./components/admin/UpdateEquipment";
+import EquipmentHistory from "./components/AssignmentEquipment/EquipmentHistory";
+import UserHistory from "./components/AssignmentEquipment/UserHistory";
 // Wrapper components to get params and pass as props
 
 
-
-
-
-
-
-
-
-
-const UserHistory = () => {
-  const { userId } = useParams();
-  return <UserHistoryBase userId={userId} />;
-};
-
-const EquipmentHistory = () => {
-  const { equipmentId } = useParams();
-  return <EquipmentHistoryBase equipmentId={equipmentId} />;
-};
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },

@@ -14,6 +14,8 @@ export const createAssignment = async (req, res) => {
 
         const { assignedTo, assignedBy } = req.body;
 
+        
+        
         // Validate required fields
         if (!assignedTo || !assignedBy) {
             return res.status(400).json({
@@ -21,6 +23,7 @@ export const createAssignment = async (req, res) => {
                 success: false,
             });
         }
+        
 
         // Find assigned user by userId (case-insensitive)
         const assignedUser = await User.findOne({
@@ -34,6 +37,26 @@ export const createAssignment = async (req, res) => {
             });
         }
 
+        const existEquipment = await Equipment.findById(id);
+        // console.log(existEquipment);
+        
+
+        if (!existEquipment) {
+            return res.status(404).json({
+                success: false,
+                message: "Equipment not exist."
+            })
+        }
+
+        if (user.role != "Farmer")
+            existEquipment.status = "Assigned";
+        else
+            existEquipment.status = "Rented";
+
+        // console.log("hello");
+        await existEquipment.save();
+
+        
         // Create new assignment record
         const newAssignment = await AssignmentHistory.create({
             equipment: id,
@@ -67,19 +90,33 @@ export const markAsReturned = async (req, res) => {
         const { assignmentId } = req.params;
 
         // console.log(req.body);
-        const {assignedTo,assignedBy} = req.body;
+        const { assignedTo, assignedBy, equipmentId } = req.body;
 
-        const assignedToUser = await User.find({assignedTo});
-        const assignedByUser = await User.find({assignedBy});
+        const assignedToUser = await User.find({ assignedTo });
+        const assignedByUser = await User.find({ assignedBy });
 
-        if(!assignedToUser || !assignedByUser){
+        if (!assignedToUser || !assignedByUser) {
             return res.status(400).json({
-                success:false,
-                message:"user id can not find."
+                success: false,
+                message: "user id can not find."
             })
         }
-        
-        
+
+        const existEquipment = await Equipment.findById(equipmentId);
+
+        if (!existEquipment) {
+            return res.status(404).json({
+                success: false,
+                message: "Equipment not exist."
+            })
+        }
+
+        existEquipment.status = "Available";
+
+        await existEquipment.save();
+
+
+
         const updated = await AssignmentHistory.findByIdAndUpdate(
             assignmentId,
             { returnedAt: new Date() },
@@ -144,8 +181,8 @@ export const allAssignedEquipment = async (req, res) => {
     try {
         const assignedEquipmentList = await AssignmentHistory.find();
 
-        console.log(assignedEquipmentList);
-        
+        // console.log(assignedEquipmentList);
+
 
         return res.status(200).json({
             success: true,

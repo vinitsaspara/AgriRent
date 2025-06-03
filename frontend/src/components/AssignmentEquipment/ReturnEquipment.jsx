@@ -4,8 +4,11 @@ import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import useGetAllEquipment from "@/hooks/userGetAllEquipment";
 
 const ReturnEquipment = () => {
+  useGetAllEquipment();
+
   const { assignedEquipmentList } = useSelector(
     (state) => state.equipment.allAssignedEquipment
   );
@@ -18,12 +21,12 @@ const ReturnEquipment = () => {
   );
   const assignmentId = assignment?._id;
 
-  console.log(assignmentId);
-  
+  // console.log(assignmentId);
 
   const [formData, setFormData] = useState({
     assignedTo: "",
     assignedBy: "",
+    equipmentId,
   });
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +35,7 @@ const ReturnEquipment = () => {
   };
 
   const handleReturn = async () => {
-    const { assignedTo, assignedBy } = formData;
+    const { assignedTo, assignedBy, equipmentId } = formData;
 
     if (!assignedTo.trim() || !assignedBy.trim()) {
       toast.error("Please enter both Assigned To and Assigned By user IDs.");
@@ -53,13 +56,15 @@ const ReturnEquipment = () => {
         { withCredentials: true }
       );
       // console.log(res.data);
-      
-      if(res.data.success){
+
+      if (res.data.success) {
         navigate("/admin/all-equipment");
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error while returning equipment.");
+      toast.error(
+        error.response?.data?.message || "Error while returning equipment."
+      );
     } finally {
       setLoading(false);
     }
