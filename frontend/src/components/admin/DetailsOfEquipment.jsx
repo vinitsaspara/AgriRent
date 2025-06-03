@@ -8,8 +8,11 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import toast from "react-hot-toast";
+import useGetAllAssignedEquipment from "@/hooks/useGetAllAssignedEquipment";
 
 const DetailsOfEquipment = () => {
+  useGetAllAssignedEquipment();
+
   const { id } = useParams();
   const { equipmentList } = useSelector(
     (state) => state.equipment?.allEquipment || {}
@@ -26,7 +29,11 @@ const DetailsOfEquipment = () => {
   }, [equipmentList, id]);
 
   if (!equipment) {
-    return <div className="p-6 text-center text-lg">Loading equipment details...</div>;
+    return (
+      <div className="p-6 text-center text-lg">
+        Loading equipment details...
+      </div>
+    );
   }
 
   const removeHandler = async () => {
@@ -51,12 +58,13 @@ const DetailsOfEquipment = () => {
     }
   };
 
-  const badgeColor = {
-    Available: "bg-green-600",
-    Assigned: "bg-yellow-600",
-    Rented: "bg-blue-600",
-    "Under Maintenance": "bg-red-600",
-  }[equipment.availabilityStatus] || "bg-gray-500";
+  const badgeColor =
+    {
+      Available: "bg-green-600",
+      Assigned: "bg-yellow-600",
+      Rented: "bg-blue-600",
+      "Under Maintenance": "bg-red-600",
+    }[equipment.availabilityStatus] || "bg-gray-500";
 
   return (
     <div>
@@ -85,9 +93,7 @@ const DetailsOfEquipment = () => {
               <Detail label="Rent / Hour" value={`₹${equipment.rentPerHour}`} />
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
-                <Badge className={badgeColor}>
-                  {equipment.status}
-                </Badge>
+                <Badge className={badgeColor}>{equipment.status}</Badge>
               </div>
             </div>
 
@@ -100,7 +106,9 @@ const DetailsOfEquipment = () => {
 
             {user?.role === "Admin" && (
               <div className="flex flex-wrap justify-center gap-4 mt-6">
-                <Button onClick={() => navigate(`/admin/equipment-update/${id}`)}>
+                <Button
+                  onClick={() => navigate(`/admin/equipment-update/${id}`)}
+                >
                   Update
                 </Button>
                 <Button variant="destructive" onClick={removeHandler}>
@@ -112,7 +120,7 @@ const DetailsOfEquipment = () => {
                 <Button onClick={() => navigate(`/history-equipment/${id}`)}>
                   View History
                 </Button>
-                 <Button onClick={() => navigate(`/return-equipment/${id}`)}>
+                <Button onClick={() => navigate(`/return-equipment/${id}`)}>
                   Return Equipment
                 </Button>
               </div>

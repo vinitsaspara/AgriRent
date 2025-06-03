@@ -66,11 +66,26 @@ export const markAsReturned = async (req, res) => {
     try {
         const { assignmentId } = req.params;
 
+        // console.log(req.body);
+        const {assignedTo,assignedBy} = req.body;
+
+        const assignedToUser = await User.find({assignedTo});
+        const assignedByUser = await User.find({assignedBy});
+
+        if(!assignedToUser || !assignedByUser){
+            return res.status(400).json({
+                success:false,
+                message:"user id can not find."
+            })
+        }
+        
+        
         const updated = await AssignmentHistory.findByIdAndUpdate(
             assignmentId,
             { returnedAt: new Date() },
             { new: true }
         );
+
 
         if (!updated) {
             return res.status(404).json({ success: false, message: "Assignment not found" });
@@ -125,3 +140,24 @@ export const getHistoryByEquipment = async (req, res) => {
     }
 };
 
+export const allAssignedEquipment = async (req, res) => {
+    try {
+        const assignedEquipmentList = await AssignmentHistory.find();
+
+        console.log(assignedEquipmentList);
+        
+
+        return res.status(200).json({
+            success: true,
+            message: "All assigned equipment fetched successfully",
+            assignedEquipmentList,
+        });
+    } catch (error) {
+        console.error("Error fetching assigned equipment:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching assigned equipment",
+            error: error.message,
+        });
+    }
+}

@@ -1,67 +1,109 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
-const ReturnEquipment = ({ assignmentId }) => {
-  const [assignedTo, setAssignedTo] = useState("");
-  const [assignedBy, setAssignedBy] = useState("");
-  const [message, setMessage] = useState("");
-console.log(assignmentId, "assignmentId in ReturnEquipment");
+const ReturnEquipment = () => {
+  const { assignedEquipmentList } = useSelector(
+    (state) => state.equipment.allAssignedEquipment
+  );
+  const navigate = useNavigate();
+
+  const { equipmentId } = useParams();
+
+  const assignment = assignedEquipmentList.find(
+    (eq) => eq.equipment === equipmentId
+  );
+  const assignmentId = assignment?._id;
+
+  console.log(assignmentId);
+  
+
+  const [formData, setFormData] = useState({
+    assignedTo: "",
+    assignedBy: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleReturn = async () => {
+    const { assignedTo, assignedBy } = formData;
+
     if (!assignedTo.trim() || !assignedBy.trim()) {
-      setMessage("Please enter both Assigned To and Assigned By IDs.");
+      toast.error("Please enter both Assigned To and Assigned By user IDs.");
       return;
     }
+
+    if (!assignmentId) {
+      toast.error("Assignment not found for this equipment.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await axios.post(
         `${ASSIGNMENT_API_END_POINT}/mark-returned/${assignmentId}`,
-        
-        { assignedTo, assignedBy },
+        formData,
         { withCredentials: true }
       );
-      setMessage(res.data.message);
+      // console.log(res.data);
+      
+      if(res.data.success){
+        navigate("/admin/all-equipment");
+        toast.success(res.data.message);
+      }
     } catch (error) {
-      setMessage(error.response?.data?.message || "Error returning");
+      toast.error(error.response?.data?.message || "Error while returning equipment.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-4 border rounded shadow-md w-full max-w-md mx-auto my-4">
-      <h2 className="text-lg font-bold mb-2">Mark as Returned</h2>
+      <h2 className="text-xl font-bold mb-4">Mark Equipment as Returned</h2>
 
-      <label className="block mb-2 font-medium" htmlFor="assignedTo">
+      <label htmlFor="assignedTo" className="block font-medium mb-1">
         Assigned To (User ID):
       </label>
       <input
         id="assignedTo"
+        name="assignedTo"
         type="text"
-        value={assignedTo}
-        onChange={(e) => setAssignedTo(e.target.value)}
-        placeholder="Assigned To"
+        value={formData.assignedTo}
+        onChange={handleChange}
         className="border p-2 rounded w-full mb-4"
+        placeholder="Enter Assigned To user ID"
       />
 
-      <label className="block mb-2 font-medium" htmlFor="assignedBy">
+      <label htmlFor="assignedBy" className="block font-medium mb-1">
         Assigned By (User ID):
       </label>
       <input
         id="assignedBy"
+        name="assignedBy"
         type="text"
-        value={assignedBy}
-        onChange={(e) => setAssignedBy(e.target.value)}
-        placeholder="Assigned By"
+        value={formData.assignedBy}
+        onChange={handleChange}
         className="border p-2 rounded w-full mb-4"
+        placeholder="Enter Assigned By user ID"
       />
 
       <button
         onClick={handleReturn}
-        className="bg-green-600 text-white px-4 py-2 rounded"
+        disabled={loading}
+        className={`px-4 py-2 rounded text-white ${
+          loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+        }`}
       >
-        Return Equipment
+        {loading ? "Processing..." : "Return Equipment"}
       </button>
-
-      {message && <p className="mt-2 text-sm">{message}</p>}
     </div>
   );
 };
