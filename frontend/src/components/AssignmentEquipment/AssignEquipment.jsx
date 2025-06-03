@@ -1,27 +1,41 @@
-
 import axios from "axios";
 import React, { useState } from "react";
-import {ASSIGNMENT_API_END_POINT} from "../../utils/constant";
+import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const AssignEquipment = ({ equipmentId, loggedInUserId }) => {
+const AssignEquipment = () => {
+  const { user } = useSelector((state) => state.user);
+  const { equipmentId } = useParams();
+
+  const loggedInUserId = user.userId;
+
+  // console.log(equipmentId);
+
   const [assignedTo, setAssignedTo] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleAssign = async () => {
     try {
-      const res = await axios.post(`${ASSIGNMENT_API_END_POINT}/create-assignment/${equipmentId}`, {
-        assignedTo,
-        assignedBy: loggedInUserId,
-        
-      },
+      const res = await axios.post(
+        `${ASSIGNMENT_API_END_POINT}/create-assignment/${equipmentId}`,
         {
-            headers: {
+          assignedTo,
+          assignedBy: loggedInUserId,
+        },
+        {
+          headers: {
             "Content-Type": "application/json",
-            },
-            withCredentials: true,
-        });
-    
-      setMessage(res.data.message);
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.sucess) {
+        navigate("/admin/all-equipment");
+        toast.sucess(res.data.message);
+      }
     } catch (error) {
       setMessage(error.response?.data?.message || "Error assigning");
     }

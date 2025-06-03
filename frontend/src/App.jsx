@@ -19,41 +19,22 @@ import ReturnEquipmentBase from "./components/AssignmentEquipment/ReturnEquipmen
 import UserHistoryBase from "./components/AssignmentEquipment/UserHistory";
 import EquipmentHistoryBase from "./components/AssignmentEquipment/EquipmentHistory";
 import { useSelector } from "react-redux";
+import ReturnEquipment from "./components/AssignmentEquipment/ReturnEquipment";
+import AssignEquipment from "./components/AssignmentEquipment/AssignEquipment";
+import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
+import DetailsOfMember from "./components/admin/DetailsOfMember";
+import UpdateMember from "./components/admin/UpdateMember";
+import UpdateEquipment from "./components/admin/UpdateEquipment";
 // Wrapper components to get params and pass as props
-const DetailsOfEquipment = () => {
-  const { id } = useParams();
-  return <DetailsOfEquipmentBase equipmentId={id} />;
-};
-
-const DetailsOfMember = () => {
-  const { id } = useParams();
-  return <DetailsOfMemberBase memberId={id} />;
-};
-
-const UpdateMember = () => {
-  const { id } = useParams();
-  return <UpdateMemberBase memberId={id} />;
-};
-
-const UpdateEquipment = () => {
-  const { id } = useParams();
-  return <UpdateEquipmentBase equipmentId={id} />;
-};
-
-const AssignEquipment = () => {
-  const { id } = useParams();
-  const user = useSelector((state) => state.user?.user?._id || state.user?.user?.userId);
 
 
-  return (
-    <AssignEquipmentBase equipmentId={id} loggedInUserId={user} />
-  );
-};
 
-const ReturnEquipment = () => {
-  const { assignmentId } = useParams();
-  return <ReturnEquipmentBase assignmentId={assignmentId} />;
-};
+
+
+
+
+
+
 
 const UserHistory = () => {
   const { userId } = useParams();
@@ -85,8 +66,8 @@ const appRouter = createBrowserRouter([
   { path: "/user/update-profile", element: <UpdateProfile /> },
 
   // assignment routes
-  { path: "/assign-equipment/:id", element: <AssignEquipment /> },
-  { path: "/return-equipment/:assignmentId", element: <ReturnEquipment /> },
+  { path: "/assign-equipment/:equipmentId", element: <AssignEquipment /> },
+  { path: "/return-equipment/:equipmentId", element: <ReturnEquipment /> },
   { path: "/history-user/:userId", element: <UserHistory /> },
   { path: "/history-equipment/:equipmentId", element: <EquipmentHistory /> },
 ]);
