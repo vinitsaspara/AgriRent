@@ -64,7 +64,7 @@ const DetailsOfEquipment = () => {
       Assigned: "bg-yellow-600",
       Rented: "bg-blue-600",
       "Under Maintenance": "bg-red-600",
-    }[equipment.availabilityStatus] || "bg-gray-500";
+    }[equipment.status] || "bg-gray-500";
 
   return (
     <div>
@@ -88,7 +88,6 @@ const DetailsOfEquipment = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <Detail label="Category" value={equipment.category} />
-              <Detail label="Type" value={equipment.type} />
               <Detail label="Serial Number" value={equipment.serialNumber} />
               <Detail label="Rent / Hour" value={`₹${equipment.rentPerHour}`} />
               <div>
@@ -106,23 +105,25 @@ const DetailsOfEquipment = () => {
 
             {user?.role === "Admin" && (
               <div className="flex flex-wrap justify-center gap-4 mt-6">
-                <Button
+                <Button className="cursor-pointer"
                   onClick={() => navigate(`/admin/equipment-update/${id}`)}
                 >
                   Update
                 </Button>
-                <Button variant="destructive" onClick={removeHandler}>
+                <Button className="cursor-pointer" variant="destructive" onClick={removeHandler}>
                   Remove
                 </Button>
-                <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
-                  Assign Equipment
-                </Button>
-                <Button onClick={() => navigate(`/history-equipment/${id}`)}>
-                  View History
-                </Button>
-                <Button onClick={() => navigate(`/return-equipment/${id}`)}>
-                  Return Equipment
-                </Button>
+                <div className="flex items-center justify-center gap-5">
+                  <Button className="cursor-pointer" onClick={() => navigate(`/assign-equipment/${id}`)}>
+                    Assign Equipment
+                  </Button>
+                  <Button className="cursor-pointer" onClick={() => navigate(`/history-equipment/${id}`)}>
+                    View History
+                  </Button>
+                  <Button className="cursor-pointer" onClick={() => navigate(`/return-equipment/${id}`)}>
+                    Return Equipment
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>

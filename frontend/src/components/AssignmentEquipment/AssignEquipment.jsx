@@ -31,8 +31,9 @@ const AssignEquipment = () => {
           withCredentials: true,
         }
       );
+      console.log(res.data);
 
-      if (res.data.sucess) {
+      if (res.data.success) {
         navigate("/admin/all-equipment");
         toast.sucess(res.data.message);
       }

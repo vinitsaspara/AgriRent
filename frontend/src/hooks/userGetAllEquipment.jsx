@@ -7,7 +7,8 @@ import { useDispatch } from "react-redux";
 
 const useGetAllEquipment = () => {
   const dispatch = useDispatch();
-
+  // console.log("hellp");
+  
   useEffect(() => {
     const fetchAllEquipments = async () => {
       try {
