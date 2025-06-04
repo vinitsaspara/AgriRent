@@ -14,8 +14,8 @@ export const createAssignment = async (req, res) => {
 
         const { assignedTo, assignedBy } = req.body;
 
-        
-        
+
+
         // Validate required fields
         if (!assignedTo || !assignedBy) {
             return res.status(400).json({
@@ -23,7 +23,7 @@ export const createAssignment = async (req, res) => {
                 success: false,
             });
         }
-        
+
 
         // Find assigned user by userId (case-insensitive)
         const assignedUser = await User.findOne({
@@ -39,7 +39,7 @@ export const createAssignment = async (req, res) => {
 
         const existEquipment = await Equipment.findById(id);
         // console.log(existEquipment);
-        
+
 
         if (!existEquipment) {
             return res.status(404).json({
@@ -56,7 +56,7 @@ export const createAssignment = async (req, res) => {
         // console.log("hello");
         await existEquipment.save();
 
-        
+
         // Create new assignment record
         const newAssignment = await AssignmentHistory.create({
             equipment: id,
@@ -66,7 +66,7 @@ export const createAssignment = async (req, res) => {
 
         // Push assignment ID into User's assignmentHistory
         await User.findByIdAndUpdate(assignedUser._id, {
-            $push: { assignmentHistory: newAssignment._id },
+            $push: { equipmentHistory: newAssignment._id },
         });
 
         // Push assignment ID into Equipment's assignmentHistory
