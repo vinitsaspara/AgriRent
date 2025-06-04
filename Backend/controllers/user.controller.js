@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import cloudinary from "../config/cloudinary.js";
 import getDataUri from "../config/getDataUri.js";
+import { Equipment } from "../models/equipment.model.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -103,7 +104,8 @@ export const login = async (req, res) => {
       phoneNumber: user.phoneNumber,
       age: user.age,
       address: user.address,
-      profilePicture: user.profilePicture
+      profilePicture: user.profilePicture,
+      equipmentHistory: user.equipmentHistory
     }
 
     return res.status(200).cookie("token", token, {
