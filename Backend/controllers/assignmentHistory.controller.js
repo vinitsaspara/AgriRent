@@ -48,15 +48,6 @@ export const createAssignment = async (req, res) => {
             })
         }
 
-        if (user.role != "Farmer")
-            existEquipment.status = "Assigned";
-        else
-            existEquipment.status = "Rented";
-
-        // console.log("hello");
-        await existEquipment.save();
-
-
         // Create new assignment record
         const newAssignment = await AssignmentHistory.create({
             equipment: id,
@@ -67,6 +58,20 @@ export const createAssignment = async (req, res) => {
         // Push assignment ID into Equipment's assignmentHistory
         await Equipment.findByIdAndUpdate(id, {
             $push: { assignmentHistory: newAssignment._id },
+        });
+
+        // 1. Add equipment to assigned user's AssignedEquipment array
+        await User.findByIdAndUpdate(assignedUser._id, {
+            $addToSet: {
+                AssignedEquipment: { equipmentId: id }
+            }
+        });
+
+        // 2. Remove equipment from assigner's AssignedEquipment array (if it exists)
+        await User.findByIdAndUpdate(user._id, {
+            $pull: {
+                AssignedEquipment: { equipmentId: id }
+            }
         });
 
         res.status(201).json({
@@ -83,22 +88,17 @@ export const createAssignment = async (req, res) => {
 export const markAsReturned = async (req, res) => {
     try {
         const { assignmentId } = req.params;
-
-        
-        // console.log(req.body);
         const { assignedTo, assignedBy, equipmentId } = req.body;
-        
-        // console.log("Assignment ID:", assignmentId);
-        // console.log("Equipment ID:", equipmentId);
 
-        const assignedToUser = await User.find({ assignedTo });
-        const assignedByUser = await User.find({ assignedBy });
-        
+        // Get users properly using findOne (not find)
+        const assignedToUser = await User.findOne({ userId: assignedTo });
+        const assignedByUser = await User.findOne({ userId: assignedBy });
+
         if (!assignedToUser || !assignedByUser) {
             return res.status(400).json({
                 success: false,
-                message: "user id can not find."
-            })
+                message: "User ID not found."
+            });
         }
 
         const existEquipment = await Equipment.findById(equipmentId);
@@ -106,36 +106,52 @@ export const markAsReturned = async (req, res) => {
         if (!existEquipment) {
             return res.status(404).json({
                 success: false,
-                message: "Equipment not exist."
-            })
+                message: "Equipment does not exist."
+            });
         }
 
-        existEquipment.status = "Available";
-
-        await existEquipment.save();
-
-
-
-        const updated = await AssignmentHistory.findByIdAndUpdate(
-            { _id: assignmentId,equipment: equipmentId },
+        // Mark return in assignment history
+        const updated = await AssignmentHistory.findOneAndUpdate(
+            { _id: assignmentId, equipment: equipmentId },
             { returnedAt: new Date() },
             { new: true }
         );
 
-
         if (!updated) {
-            return res.status(404).json({ success: false, message: "Assignment not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Assignment not found."
+            });
         }
 
+        // 1. Remove equipment from assignedTo user's AssignedEquipment
+        await User.findByIdAndUpdate(assignedToUser._id, {
+            $pull: {
+                AssignedEquipment: { equipmentId: equipmentId }
+            }
+        });
+
+        // 2. Add equipment to assignedBy user's AssignedEquipment
+        await User.findByIdAndUpdate(assignedByUser._id, {
+            $addToSet: {
+                AssignedEquipment: { equipmentId: equipmentId }
+            }
+        });
+
         res.status(200).json({
+            success: true,
             message: "Marked as returned",
-            assignment: updated,
-            success: true
+            assignment: updated
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to update return", error });
+        res.status(500).json({
+            success: false,
+            message: "Failed to update return",
+            error
+        });
     }
 };
+
 
 // Get history for a specific user by userId (case-insensitive)
 export const getHistoryByUser = async (req, res) => {

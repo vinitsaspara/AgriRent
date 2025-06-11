@@ -4,73 +4,90 @@ import { Equipment } from '../models/equipment.model.js'; // ensure correct impo
 import { User } from '../models/user.model.js';
 
 export const addEquipment = async (req, res) => {
-    try {
-        const {
-            name,
-            serialNumber,
-            description,
-            rentPerHour,
-            status,
-            category,
-        } = req.body;
+  try {
+    const {
+      name,
+      serialNumber,
+      descriptionEnglish,
+      descriptionGujarat,
+      rentPerHour,
+      status,
+      category,
+    } = req.body;
 
-        const file = req.file;
+    const file = req.file;
+    const user = req.user; // Get the logged-in user
 
-        // Check all required fields
-        if (
-            !name ||
-            !category ||
-            !serialNumber ||
-            !description ||
-            !rentPerHour ||
-            !status
-        ) {
-            return res.status(400).json({
-                message: "All fields are required.",
-                success: false,
-            });
-        }
 
-        const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-        const imageUri = cloudResponse.secure_url;
-
-        // ✅ FIX: Await the database call
-        const existEquipment = await Equipment.findOne({ serialNumber });
-
-        if (existEquipment) {
-            return res.status(400).json({
-                message: "Equipment already exists.",
-                success: false,
-            });
-        }
-
-        const newEquipment = new Equipment({
-            name,
-            serialNumber,
-            description,
-            rentPerHour,
-            category,
-            image: imageUri,
-            status
-        });
-
-        await newEquipment.save();
-
-        return res.status(201).json({
-            success: true,
-            message: "Equipment added successfully",
-            data: newEquipment,
-        });
-    } catch (error) {
-        console.error("Error adding equipment:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error while adding equipment",
-            error: error.message,
-        });
+    // Check all required fields
+    if (
+      !name ||
+      !category ||
+      !serialNumber ||
+      !descriptionGujarat ||
+      !descriptionEnglish ||
+      !rentPerHour ||
+      !status
+    ) {
+      return res.status(400).json({
+        message: "All fields are required.",
+        success: false,
+      });
     }
+
+    let cloudResponse;
+    // If a file is provided, upload it to Cloudinary
+    if (file) {
+      const fileUri = getDataUri(file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+    }
+    const imageUri = cloudResponse?.secure_url || ""; // Use the secure URL from Cloudinary response
+
+    // ✅ FIX: Await the database call
+    const existEquipment = await Equipment.findOne({ serialNumber });
+
+    if (existEquipment) {
+      return res.status(400).json({
+        message: "Equipment already exists.",
+        success: false,
+      });
+    }
+
+    const newEquipment = new Equipment({
+      name,
+      serialNumber,
+      descriptionEnglish,
+      descriptionGujarat,
+      rentPerHour,
+      category,
+      image: imageUri,
+      status
+    });
+
+    await newEquipment.save();
+
+    await User.findByIdAndUpdate(
+      user._id, // Use the logged-in user's ID
+      {
+        $push: { AssignedEquipment: { equipmentId: newEquipment._id } }
+      },
+      { new: true }
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Equipment added successfully",
+      data: newEquipment,
+    });
+  } catch (error) {
+    console.error("Error adding equipment:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while adding equipment",
+      error: error.message,
+    });
+  }
 };
 
 
@@ -135,7 +152,7 @@ export const updateEquipment = async (req, res) => {
       equipment: {
         _id: updatedEquipment._id,
         name: updatedEquipment.name,
-        category : updatedEquipment.category,
+        category: updatedEquipment.category,
         serialNumber: updatedEquipment.serialNumber,
         description: updatedEquipment.description,
         rentPerHour: updatedEquipment.rentPerHour,
@@ -156,32 +173,32 @@ export const updateEquipment = async (req, res) => {
 
 
 export const deleteEquipment = async (req, res) => {
-    try {
-        const { id } = req.params; // Equipment ID from URL
+  try {
+    const { id } = req.params; // Equipment ID from URL
 
-        const deletedEquipment = await Equipment.findByIdAndDelete(id);
+    const deletedEquipment = await Equipment.findByIdAndDelete(id);
 
-        if (!deletedEquipment) {
-            return res.status(404).json({
-                success: false,
-                message: "Equipment not found",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Equipment deleted successfully",
-            data: deletedEquipment,
-        });
-
-    } catch (error) {
-        console.error("Error deleting equipment:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error while deleting equipment",
-            error: error.message,
-        });
+    if (!deletedEquipment) {
+      return res.status(404).json({
+        success: false,
+        message: "Equipment not found",
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: "Equipment deleted successfully",
+      data: deletedEquipment,
+    });
+
+  } catch (error) {
+    console.error("Error deleting equipment:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while deleting equipment",
+      error: error.message,
+    });
+  }
 };
 
 export const getAllEquipment = async (req, res) => {
