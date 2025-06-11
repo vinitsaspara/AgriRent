@@ -5,7 +5,11 @@ const equipmentSchema = new mongoose.Schema({
   serialNumber: { type: String, unique: true, required: true },
   category: { type: String },
   status: { type: String, enum: ['Available', 'Assigned', 'Rented', 'Maintenance'], default: 'available' },
-  description: {
+  descriptionEnglish: {
+    type: String,
+    required: true
+  },
+  descriptionGujarat: {
     type: String,
     required: true
   },
