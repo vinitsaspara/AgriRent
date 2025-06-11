@@ -105,7 +105,6 @@ export const login = async (req, res) => {
       age: user.age,
       address: user.address,
       profilePicture: user.profilePicture,
-      equipmentHistory: user.equipmentHistory
     }
 
     return res.status(200).cookie("token", token, {
