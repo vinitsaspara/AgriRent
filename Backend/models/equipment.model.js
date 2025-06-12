@@ -9,7 +9,7 @@ const equipmentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  descriptionGujarat: {
+  descriptionGujarati: {
     type: String,
     required: true
   },

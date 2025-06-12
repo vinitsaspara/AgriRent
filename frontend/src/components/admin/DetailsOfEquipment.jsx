@@ -8,33 +8,23 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import toast from "react-hot-toast";
-import useGetAllAssignedEquipment from "@/hooks/useGetAllAssignedEquipment";
 
 const DetailsOfEquipment = () => {
-  useGetAllAssignedEquipment();
-
   const { id } = useParams();
-  const { equipmentList } = useSelector(
-    (state) => state.equipment?.allEquipment || {}
-  );
-  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.user);
+  const { allEquipment } = useSelector((state) => state.equipment);
+  const assignedEquipmentIds =
+    user?.AssignedEquipment?.map((item) => item.equipmentId._id) || [];
+
+    // console.log("Assigned Equipment IDs:", assignedEquipmentIds);
   const [equipment, setEquipment] = useState(null);
 
   useEffect(() => {
-    if (equipmentList) {
-      const found = equipmentList.find((eq) => eq._id === id);
-      setEquipment(found);
-    }
-  }, [equipmentList, id]);
-
-  if (!equipment) {
-    return (
-      <div className="p-6 text-center text-lg">
-        Loading equipment details...
-      </div>
-    );
-  }
+    const found = (allEquipment || []).find((eq) => eq._id === id);
+    setEquipment(found);
+  }, [allEquipment, id]);
 
   const removeHandler = async () => {
     try {
@@ -58,31 +48,34 @@ const DetailsOfEquipment = () => {
     }
   };
 
-  const badgeColor =
-    {
-      Available: "bg-green-600",
-      Assigned: "bg-yellow-600",
-      Rented: "bg-blue-600",
-      "Under Maintenance": "bg-red-600",
-    }[equipment.status] || "bg-gray-500";
+  const isAssigned = assignedEquipmentIds.includes(id);
+
+
+  if (!equipment) {
+    return (
+      <div className="p-6 text-center text-lg">
+        Loading equipment details...
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="min-h-screen bg-emerald-50">
       <Navbar />
       <div className="flex p-4 justify-center mt-10">
-        <Card className="w-full max-w-2xl shadow-lg border border-gray-200 p-6 rounded-2xl">
+        <Card className="w-full max-w-2xl shadow-md border border-emerald-200 p-6 rounded-2xl bg-white">
           <CardContent>
             {equipment.image && (
               <div className="flex justify-center mb-6">
                 <img
                   src={equipment.image}
                   alt={equipment.name}
-                  className="w-32 h-32 object-cover rounded-full border-4 border-blue-500 shadow"
+                  className="w-36 h-36 object-cover rounded-full border-4 border-emerald-500 shadow-md hover:scale-105 transition-transform duration-300"
                 />
               </div>
             )}
 
-            <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">
+            <h2 className="text-2xl font-bold mb-4 text-center text-emerald-700">
               {equipment.name}
             </h2>
 
@@ -92,38 +85,56 @@ const DetailsOfEquipment = () => {
               <Detail label="Rent / Hour" value={`₹${equipment.rentPerHour}`} />
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
-                <Badge className={badgeColor}>{equipment.status}</Badge>
+                <p
+                      className={`text-sm font-medium mt-2 inline-block px-3 py-1 rounded-full ${
+                        isAssigned
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
+                      {isAssigned ? "Assigned" : "Available"}
+                    </p>
               </div>
             </div>
 
             <div className="mb-4">
-              <p className="text-sm font-medium text-gray-500">Description</p>
-              <p className="text-base">
-                {equipment.description || "No description provided."}
-              </p>
+              <h3 className="text-gray-600 font-medium mb-1">Descriptions</h3>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">English</p>
+                  <p className="text-base">
+                    {equipment.descriptionEnglish || "No description provided."}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Gujarati</p>
+                  <p className="text-base">
+                    {equipment.descriptionGujarati ||
+                      "No description provided."}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {user?.role === "Admin" && (
               <div className="flex flex-wrap justify-center gap-4 mt-6">
-                <Button className="cursor-pointer"
+                <Button
                   onClick={() => navigate(`/admin/equipment-update/${id}`)}
                 >
                   Update
                 </Button>
-                <Button className="cursor-pointer" variant="destructive" onClick={removeHandler}>
+                <Button variant="destructive" onClick={removeHandler}>
                   Remove
                 </Button>
-                <div className="flex items-center justify-center gap-5">
-                  <Button className="cursor-pointer" onClick={() => navigate(`/assign-equipment/${id}`)}>
-                    Assign Equipment
-                  </Button>
-                  <Button className="cursor-pointer" onClick={() => navigate(`/history-equipment/${id}`)}>
-                    View History
-                  </Button>
-                  <Button className="cursor-pointer" onClick={() => navigate(`/return-equipment/${id}`)}>
-                    Return Equipment
-                  </Button>
-                </div>
+                <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
+                  Assign Equipment
+                </Button>
+                <Button onClick={() => navigate(`/history-equipment/${id}`)}>
+                  View History
+                </Button>
+                <Button onClick={() => navigate(`/return-equipment/${id}`)}>
+                  Return Equipment
+                </Button>
               </div>
             )}
           </CardContent>

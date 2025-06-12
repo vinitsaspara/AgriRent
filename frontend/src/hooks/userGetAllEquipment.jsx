@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 const useGetAllEquipment = () => {
   const dispatch = useDispatch();
   // console.log("hellp");
-  
+
   useEffect(() => {
     const fetchAllEquipments = async () => {
       try {
@@ -19,8 +19,11 @@ const useGetAllEquipment = () => {
           }
         );
 
+        console.log("Response from get-all-equipment:", res.data);
+        
+
         if (res.data.success) {
-          dispatch(setAllEquipment(res.data));
+          dispatch(setAllEquipment(res.data.equipmentList));
         }
       } catch (error) {
         console.log("Error in useGetAllEquipment: ", error);

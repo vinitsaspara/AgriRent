@@ -154,24 +154,23 @@ export const markAsReturned = async (req, res) => {
 
 
 // Get history for a specific user by userId (case-insensitive)
-export const getHistoryByUser = async (req, res) => {
+export const getAssignedEquipmentUser = async (req, res) => {
     try {
         const { userId } = req.params;
 
+        // console.log(userId);
+        
         // Find the user by userId (case-insensitive)
         const user = await User.findOne({
             userId: { $regex: new RegExp(`^${userId}$`, "i") },
-        });
+        }).populate("AssignedEquipment.equipmentId");
 
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        const history = await AssignmentHistory.find({ assignedTo: user._id }).populate("equipment", "name category description rentPerHour status image").select("-__v -createdAt -updatedAt -assignedBy -assignedTo");
 
-
-
-        res.status(200).json({ success: true, history });
+        res.status(200).json({ success: true, assignedEquipment: user.AssignedEquipment });
     } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching user history", error });
     }

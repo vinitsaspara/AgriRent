@@ -9,7 +9,7 @@ export const addEquipment = async (req, res) => {
       name,
       serialNumber,
       descriptionEnglish,
-      descriptionGujarat,
+      descriptionGujarati,
       rentPerHour,
       status,
       category,
@@ -24,7 +24,7 @@ export const addEquipment = async (req, res) => {
       !name ||
       !category ||
       !serialNumber ||
-      !descriptionGujarat ||
+      !descriptionGujarati ||
       !descriptionEnglish ||
       !rentPerHour ||
       !status
@@ -58,7 +58,7 @@ export const addEquipment = async (req, res) => {
       name,
       serialNumber,
       descriptionEnglish,
-      descriptionGujarat,
+      descriptionGujarati,
       rentPerHour,
       category,
       image: imageUri,
@@ -91,12 +91,12 @@ export const addEquipment = async (req, res) => {
 };
 
 
-
 export const updateEquipment = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      description,
+      descriptionGujarati,
+      descriptionEnglish,
       rentPerHour,
       status,
     } = req.body;
@@ -104,7 +104,8 @@ export const updateEquipment = async (req, res) => {
     const file = req.file;
 
     if (
-      !description ||
+      !descriptionGujarati ||
+      !descriptionEnglish ||
       !rentPerHour ||
       !status
     ) {
@@ -139,7 +140,8 @@ export const updateEquipment = async (req, res) => {
     }
 
     // Update fields
-    equipment.description = description;
+    equipment.descriptionEnglish = descriptionEnglish;
+    equipment.descriptionGujarati = descriptionGujarati;
     equipment.rentPerHour = rentPerHour;
     equipment.status = status;
     equipment.image = imageUri;
@@ -154,7 +156,8 @@ export const updateEquipment = async (req, res) => {
         name: updatedEquipment.name,
         category: updatedEquipment.category,
         serialNumber: updatedEquipment.serialNumber,
-        description: updatedEquipment.description,
+        descriptionEnglish: updatedEquipment.descriptionEnglish,
+        descriptionGujarati: updatedEquipment.descriptionGujarati,
         rentPerHour: updatedEquipment.rentPerHour,
         status: updatedEquipment.status,
         image: updatedEquipment.image,
@@ -169,7 +172,6 @@ export const updateEquipment = async (req, res) => {
     });
   }
 };
-
 
 
 export const deleteEquipment = async (req, res) => {
@@ -200,6 +202,7 @@ export const deleteEquipment = async (req, res) => {
     });
   }
 };
+
 
 export const getAllEquipment = async (req, res) => {
   try {
