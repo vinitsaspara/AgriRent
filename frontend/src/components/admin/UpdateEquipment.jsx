@@ -17,25 +17,29 @@ const UpdateEquipment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { equipmentList } = useSelector(
-    (state) => state.equipment?.allEquipment || {}
-  );
+  const { user } = useSelector((state) => state.user);
+  const equipmentList = user.AssignedEquipment || [];
 
   const [formData, setFormData] = useState({
-    description: "",
+    descriptionEnglish: "",
+    descriptionGujarat: "",
     rentPerHour: "",
     status: "Available",
     file: "",
   });
 
+  let equipment;
   useEffect(() => {
     if (equipmentList.length && id) {
-      const equipment = equipmentList.find((eq) => eq._id === id);
+      equipment = equipmentList.find((eq) => eq?.equipmentId?._id === id);
+      console.log("Equipment found:", equipment);
+      
       if (equipment) {
         setFormData({
-          description: equipment.description || "",
-          rentPerHour: equipment.rentPerHour || "",
-          status: equipment.status || "Available",
+          descriptionEnglish: equipment?.equipmentId?.descriptionEnglish || "",
+          descriptionGujarat: equipment?.equipmentId?.descriptionGujarat || "",
+          rentPerHour: equipment?.equipmentId?.rentPerHour || "",
+          status: equipment?.equipmentId?.status || "Available",
           file: "",
         });
       }
@@ -54,7 +58,8 @@ const UpdateEquipment = () => {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("description", formData.description);
+    data.append("descriptionEnglish", formData.descriptionEnglish);
+    data.append("descriptionGujarat", formData.descriptionGujarat);
     data.append("rentPerHour", formData.rentPerHour);
     data.append("status", formData.status);
 
@@ -83,55 +88,65 @@ const UpdateEquipment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div>
       <Navbar />
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
-        <h2 className="text-2xl font-semibold mb-6">Update Equipment</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full p-2 border rounded h-40"
-            required
-          />
-          <input
-            type="number"
-            name="rentPerHour"
-            placeholder="Rent Per Hour"
-            value={formData.rentPerHour}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          />
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            {availabilityOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-          <input
-            type="file"
-            name="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          >
-            Update Equipment
-          </button>
-        </form>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
+          <h2 className="text-2xl font-semibold mb-6">Update Equipment</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <textarea
+              name="descriptionEnglish"
+              placeholder="descriptionEnglish"
+              value={formData.descriptionEnglish}
+              onChange={handleChange}
+              className="w-full p-2 border rounded h-40"
+              required
+            />
+            <textarea
+              name="descriptionGujarat"
+              placeholder="descriptionGujarat"
+              value={formData.descriptionGujarat}
+              onChange={handleChange}
+              className="w-full p-2 border rounded h-40"
+              required
+            />
+            <input
+              type="number"
+              name="rentPerHour"
+              placeholder="Rent Per Hour"
+              value={formData.rentPerHour}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              {availabilityOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <input
+              type="file"
+              name="file"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+            >
+              Update Equipment
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

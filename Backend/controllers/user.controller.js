@@ -60,69 +60,82 @@ export const signUp = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-
     const { userId, password } = req.body;
 
     if (!userId || !password) {
       return res.status(400).json({
         message: "All fields are required.",
         success: false
-      })
+      });
     }
 
-    const user = await User.findOne({ userId: { $regex: new RegExp(`^${userId}$`, "i") } });
+    const user = await User.findOne({
+      userId: { $regex: new RegExp(`^${userId}$`, "i") }
+    });
 
     if (!user) {
       return res.status(400).json({
-        message: "Invalid userId or Password.",
+        message: "Invalid userId or password.",
         success: false
-      })
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       return res.status(400).json({
-        message: "Invalid userId or Password.",
+        message: "Invalid userId or password.",
         success: false
-      })
+      });
     }
 
+    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
-    )
+    );
 
+    // Populate AssignedEquipment.equipmentId
+    await user.populate("AssignedEquipment.equipmentId");
+
+    // console.log("Populated AssignedEquipment:", hello.AssignedEquipment);
+    
+
+    // Prepare user data to return
     const userData = {
-      _id: user.id,
+      _id: user._id,
       userId: user.userId,
       fullName: user.fullName,
       email: user.email,
-      password: user.password,
       role: user.role,
       phoneNumber: user.phoneNumber,
       age: user.age,
       address: user.address,
       profilePicture: user.profilePicture,
-    }
+      AssignedEquipment: user.AssignedEquipment.map((ae) => ({
+        _id: ae._id,
+        equipmentId: ae.equipmentId // populated equipment object
+      }))
+    };
 
     return res.status(200).cookie("token", token, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
       sameSite: "strict",
     }).json({
       message: `Welcome back ${userData.fullName}`,
       user: userData,
       success: true,
-    })
-
+    });
 
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal server error", success: false });
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
   }
-}
+};
 
 export const logout = async (req, res) => {
   try {

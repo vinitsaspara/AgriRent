@@ -14,11 +14,12 @@ const persistConfig = {
 
 // Wrap your reducer with persistReducer
 const userPersistedReducer = persistReducer(persistConfig, userSlice);
+const equipmentPersistedReducer = persistReducer(persistConfig, equipmentSlice);
 
 const store = configureStore({
   reducer: {
     user: userPersistedReducer,
-    equipment : equipmentSlice
+    equipment: equipmentPersistedReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
