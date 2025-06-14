@@ -4,35 +4,16 @@ import React, { useEffect, useState } from "react";
 import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
 
 const EquipmentHistory = () => {
-  const [history, setHistory] = useState([]);
-  const user = useSelector((state) => state.user);
-  const { equipmentId } = useParams(); // Get equipmentId from route
+  useGetAssignmentHistory();
 
-  const fetchHistory = async () => {
-    try {
-      const res = await axios.get(
-        `${ASSIGNMENT_API_END_POINT}/history-equipment/${equipmentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      setHistory(res.data.history);
-    } catch (error) {
-      console.error("Error fetching history", error);
-    }
-  };
+  const {equipmentHistory} = useSelector(
+    (state) => state.equipment
+  );
 
-  useEffect(() => {
-    if (equipmentId) {
-      fetchHistory();
-    }
-  }, [equipmentId]);
+  const history = equipmentHistory;
 
   return (
     <div className="p-4">

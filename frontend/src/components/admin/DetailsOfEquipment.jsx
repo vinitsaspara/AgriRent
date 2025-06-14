@@ -18,7 +18,7 @@ const DetailsOfEquipment = () => {
   const assignedEquipmentIds =
     user?.AssignedEquipment?.map((item) => item.equipmentId._id) || [];
 
-    // console.log("Assigned Equipment IDs:", assignedEquipmentIds);
+  // console.log("Assigned Equipment IDs:", assignedEquipmentIds);
   const [equipment, setEquipment] = useState(null);
 
   useEffect(() => {
@@ -49,7 +49,6 @@ const DetailsOfEquipment = () => {
   };
 
   const isAssigned = assignedEquipmentIds.includes(id);
-
 
   if (!equipment) {
     return (
@@ -86,14 +85,14 @@ const DetailsOfEquipment = () => {
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
                 <p
-                      className={`text-sm font-medium mt-2 inline-block px-3 py-1 rounded-full ${
-                        isAssigned
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {isAssigned ? "Assigned" : "Available"}
-                    </p>
+                  className={`text-sm font-medium mt-2 inline-block px-3 py-1 rounded-full ${
+                    isAssigned
+                    ?"bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {isAssigned ? "Available" : "Assigned"}
+                </p>
               </div>
             </div>
 
@@ -126,17 +125,26 @@ const DetailsOfEquipment = () => {
                 <Button variant="destructive" onClick={removeHandler}>
                   Remove
                 </Button>
-                <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
-                  Assign Equipment
-                </Button>
-                <Button onClick={() => navigate(`/history-equipment/${id}`)}>
-                  View History
-                </Button>
-                <Button onClick={() => navigate(`/return-equipment/${id}`)}>
-                  Return Equipment
-                </Button>
               </div>
             )}
+
+            <div className="flex justify-between items-center mt-6">
+              <Button onClick={() => navigate(`/history-equipment/${id}`)}>
+                View History
+              </Button>
+              {isAssigned ? (
+                <div className="flex gap-2">
+                  <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
+                    Assign Equipment
+                  </Button>
+                  <Button onClick={() => navigate(`/return-equipment/${id}`)}>
+                    Return Equipment
+                  </Button>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

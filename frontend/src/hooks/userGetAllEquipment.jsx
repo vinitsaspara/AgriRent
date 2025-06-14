@@ -19,7 +19,7 @@ const useGetAllEquipment = () => {
           }
         );
 
-        console.log("Response from get-all-equipment:", res.data);
+        // console.log("Response from get-all-equipment:", res.data);
         
 
         if (res.data.success) {

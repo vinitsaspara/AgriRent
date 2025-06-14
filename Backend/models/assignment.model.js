@@ -9,4 +9,3 @@ const assignmentHistorySchema = new mongoose.Schema({
 });
 
 export const AssignmentHistory = mongoose.model('AssignmentHistory', assignmentHistorySchema);
-
