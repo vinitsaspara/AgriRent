@@ -90,6 +90,8 @@ export const markAsReturned = async (req, res) => {
         const { assignmentId } = req.params;
         const { assignedTo, assignedBy, equipmentId } = req.body;
 
+        
+
         // Get users properly using findOne (not find)
         const assignedToUser = await User.findOne({ userId: assignedTo });
         const assignedByUser = await User.findOne({ userId: assignedBy });
