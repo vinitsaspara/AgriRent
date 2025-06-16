@@ -4,7 +4,6 @@ import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import useGetAllEquipment from "@/hooks/userGetAllEquipment";
 import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
 
 const ReturnEquipment = () => {
@@ -16,8 +15,7 @@ const ReturnEquipment = () => {
 
   // console.log("Equipment History:", equipmentHistory);
 
-  const loggedInUserId = user?._id; // Replace with actual logged-in user ID
-  // Replace with the equipment ID you're looking for
+  const loggedInUserId = user?._id;
 
   const matchedRecord = equipmentHistory.find(
     (item) =>
@@ -27,8 +25,6 @@ const ReturnEquipment = () => {
   const assignmentId = matchedRecord ? matchedRecord._id : null;
 
   // console.log("AssgienMent Id:", assignmentId);
-
-
 
   const navigate = useNavigate();
 
@@ -77,8 +73,6 @@ const ReturnEquipment = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="p-4 border rounded shadow-md w-full max-w-md mx-auto my-4">

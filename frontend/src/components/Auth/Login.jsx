@@ -34,7 +34,7 @@ export function Login() {
       );
 
       if (res.data.success) {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(setUser(res.data?.user));
         navigate("/");
         toast.success(res.data.message);

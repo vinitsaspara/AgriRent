@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Navbar } from "../pages/Navbar";
 import { Button } from "../ui/button";
 import axios from "axios";
@@ -16,9 +15,9 @@ const DetailsOfEquipment = () => {
   const { user } = useSelector((state) => state.user);
   const { allEquipment } = useSelector((state) => state.equipment);
   const assignedEquipmentIds =
-    user?.AssignedEquipment?.map((item) => item.equipmentId._id) || [];
+    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) ||
+    [];
 
-  // console.log("Assigned Equipment IDs:", assignedEquipmentIds);
   const [equipment, setEquipment] = useState(null);
 
   useEffect(() => {
@@ -31,9 +30,7 @@ const DetailsOfEquipment = () => {
       const res = await axios.delete(
         `${EQUIPMENT_API_END_POINT}/delete-equipment/${id}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
@@ -48,7 +45,11 @@ const DetailsOfEquipment = () => {
     }
   };
 
-  const isAssigned = assignedEquipmentIds.includes(id);
+  const isAssigned = assignedEquipmentIds.includes(id.toString());
+  const statusLabel = isAssigned ? "Available" : "Assigned";
+  const statusColor = isAssigned
+    ? "bg-green-100 text-green-800"
+    : "bg-yellow-100 text-yellow-800";
 
   if (!equipment) {
     return (
@@ -61,20 +62,20 @@ const DetailsOfEquipment = () => {
   return (
     <div className="min-h-screen bg-emerald-50">
       <Navbar />
-      <div className="flex p-4 justify-center mt-10">
-        <Card className="w-full max-w-2xl shadow-md border border-emerald-200 p-6 rounded-2xl bg-white">
+      <div className="flex justify-center p-4 mt-10">
+        <Card className="w-full max-w-3xl border border-emerald-300 p-8 rounded-3xl bg-white shadow-lg">
           <CardContent>
             {equipment.image && (
               <div className="flex justify-center mb-6">
                 <img
                   src={equipment.image}
                   alt={equipment.name}
-                  className="w-36 h-36 object-cover rounded-full border-4 border-emerald-500 shadow-md hover:scale-105 transition-transform duration-300"
+                  className="w-48 h-48 object-cover rounded-2xl border-4 border-emerald-500 shadow-lg hover:scale-105 transition-transform duration-300"
                 />
               </div>
             )}
 
-            <h2 className="text-2xl font-bold mb-4 text-center text-emerald-700">
+            <h2 className="text-2xl font-bold text-center text-emerald-700 mb-4">
               {equipment.name}
             </h2>
 
@@ -84,66 +85,70 @@ const DetailsOfEquipment = () => {
               <Detail label="Rent / Hour" value={`₹${equipment.rentPerHour}`} />
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
-                <p
-                  className={`text-sm font-medium mt-2 inline-block px-3 py-1 rounded-full ${
-                    isAssigned
-                    ?"bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
+                <span
+                  className={`text-sm mt-2 inline-block px-3 py-1 rounded-full ${statusColor}`}
                 >
-                  {isAssigned ? "Available" : "Assigned"}
-                </p>
+                  {statusLabel}
+                </span>
               </div>
             </div>
 
             <div className="mb-4">
-              <h3 className="text-gray-600 font-medium mb-1">Descriptions</h3>
+              <h3 className="text-gray-600 font-medium mb-2">Descriptions</h3>
               <div className="space-y-2">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">English</p>
-                  <p className="text-base">
-                    {equipment.descriptionEnglish || "No description provided."}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Gujarati</p>
-                  <p className="text-base">
-                    {equipment.descriptionGujarati ||
-                      "No description provided."}
-                  </p>
-                </div>
+                <DescriptionBlock
+                  label="English"
+                  text={equipment.descriptionEnglish}
+                />
+                <DescriptionBlock
+                  label="Gujarati"
+                  text={equipment.descriptionGujarati}
+                />
               </div>
             </div>
 
-            {user?.role === "Admin" && (
-              <div className="flex flex-wrap justify-center gap-4 mt-6">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {isAssigned && (
                 <Button
+                  className="w-full"
                   onClick={() => navigate(`/admin/equipment-update/${id}`)}
                 >
-                  Update
+                  ✏️ Update
                 </Button>
-                <Button variant="destructive" onClick={removeHandler}>
-                  Remove
-                </Button>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center mt-6">
-              <Button onClick={() => navigate(`/history-equipment/${id}`)}>
-                View History
-              </Button>
-              {isAssigned ? (
-                <div className="flex gap-2">
-                  <Button onClick={() => navigate(`/assign-equipment/${id}`)}>
-                    Assign Equipment
-                  </Button>
-                  <Button onClick={() => navigate(`/return-equipment/${id}`)}>
-                    Return Equipment
-                  </Button>
-                </div>
-              ) : (
-                ""
               )}
+              <Button
+                className="w-full"
+                variant="destructive"
+                onClick={removeHandler}
+              >
+                🗑️ Remove
+              </Button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                className="w-full"
+                onClick={() => navigate(`/assign-equipment/${id}`)}
+              >
+                📦 Assign Equipment
+              </Button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {user?.role !== "Admin" && (
+                <Button
+                  className="w-full"
+                  onClick={() => navigate(`/return-equipment/${id}`)}
+                >
+                  🔁 Return Equipment
+                </Button>
+              )}
+              <Button
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={() => navigate(`/history-equipment/${id}`)}
+              >
+                📜 View History
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -156,6 +161,13 @@ const Detail = ({ label, value }) => (
   <div>
     <p className="text-sm font-medium text-gray-500">{label}</p>
     <p className="text-base">{value}</p>
+  </div>
+);
+
+const DescriptionBlock = ({ label, text }) => (
+  <div>
+    <p className="text-sm font-medium text-gray-500">{label}</p>
+    <p className="text-base">{text || "No description provided."}</p>
   </div>
 );
 

@@ -40,12 +40,27 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrwcRgFA-KFW6u0wScyvZEBWMLME5WkdeCUg&s"
     },
-    AssignedEquipment: [{
-        equipmentId: {
+    AssignedEquipment: [
+        {
+
             type: mongoose.Schema.Types.ObjectId,
             ref: "Equipment"
         }
-    }]
+    ],
+    state: {
+        type: String,
+        required: true
+    },
+    district: {
+        type: String,
+    },
+    taluka: {
+        type: String,
+    },
+    village: {
+        type: String,
+    }
+    
 }, { timestamps: true })
 
 export const User = mongoose.model("User", userSchema);

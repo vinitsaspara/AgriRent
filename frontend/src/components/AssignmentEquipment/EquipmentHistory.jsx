@@ -1,17 +1,10 @@
-// src/components/EquipmentHistory.jsx
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
 
 const EquipmentHistory = () => {
   useGetAssignmentHistory();
 
-  const {equipmentHistory} = useSelector(
-    (state) => state.equipment
-  );
+  const { equipmentHistory } = useSelector((state) => state.equipment);
 
   const history = equipmentHistory;
 

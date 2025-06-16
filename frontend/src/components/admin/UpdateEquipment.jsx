@@ -20,9 +20,11 @@ const UpdateEquipment = () => {
   const { user } = useSelector((state) => state.user);
   const equipmentList = user.AssignedEquipment || [];
 
+  // console.log(equipmentList)
+
   const [formData, setFormData] = useState({
     descriptionEnglish: "",
-    descriptionGujarat: "",
+    descriptionGujarati: "",
     rentPerHour: "",
     status: "Available",
     file: "",
@@ -31,20 +33,22 @@ const UpdateEquipment = () => {
   let equipment;
   useEffect(() => {
     if (equipmentList.length && id) {
-      equipment = equipmentList.find((eq) => eq?.equipmentId?._id === id);
-      console.log("Equipment found:", equipment);
-      
+      equipment = equipmentList?.find((equipment) => equipment?._id === id);
+      // console.log("Equipment found:", equipment);
+
       if (equipment) {
         setFormData({
-          descriptionEnglish: equipment?.equipmentId?.descriptionEnglish || "",
-          descriptionGujarat: equipment?.equipmentId?.descriptionGujarat || "",
-          rentPerHour: equipment?.equipmentId?.rentPerHour || "",
-          status: equipment?.equipmentId?.status || "Available",
+          descriptionEnglish: equipment?.descriptionEnglish || "",
+          descriptionGujarati: equipment?.descriptionGujarati || "",
+          rentPerHour: equipment?.rentPerHour || "",
+          status: equipment?.status || "Available",
           file: "",
         });
       }
     }
   }, [equipmentList, id]);
+
+  console.log(equipmentList);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -59,7 +63,7 @@ const UpdateEquipment = () => {
 
     const data = new FormData();
     data.append("descriptionEnglish", formData.descriptionEnglish);
-    data.append("descriptionGujarat", formData.descriptionGujarat);
+    data.append("descriptionGujarati", formData.descriptionGujarati);
     data.append("rentPerHour", formData.rentPerHour);
     data.append("status", formData.status);
 
@@ -103,9 +107,11 @@ const UpdateEquipment = () => {
               required
             />
             <textarea
-              name="descriptionGujarat"
-              placeholder="descriptionGujarat"
-              value={formData.descriptionGujarat}
+              name="descriptionGujarati
+"
+              placeholder="descriptionGujarati
+"
+              value={formData.descriptionGujarati}
               onChange={handleChange}
               className="w-full p-2 border rounded h-40"
               required

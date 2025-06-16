@@ -7,12 +7,12 @@ import { Equipment } from "../models/equipment.model.js";
 
 export const signUp = async (req, res) => {
   try {
-    const { userId, fullName, email, password, role, age, phoneNumber, address } = req.body;
+    const { userId, fullName, email, password, role, age, phoneNumber, address, state } = req.body;
 
     // console.log(userId, fullName, email, password, role, age, phoneNumber, address);
 
 
-    if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address) {
+    if (!userId || !fullName || !email || !password || !age || !phoneNumber || !address || !state) {
       return res.status(400).json({
         message: "All fields are required.",
         success: false
@@ -44,7 +44,11 @@ export const signUp = async (req, res) => {
       address,
       role,
       age,
-      phoneNumber
+      phoneNumber,
+      state,
+      district: req.body.district || "",
+      taluka: req.body.taluka || "",
+      village: req.body.village || "",
     })
 
     return res.status(201).json({
@@ -96,10 +100,10 @@ export const login = async (req, res) => {
     );
 
     // Populate AssignedEquipment.equipmentId
-    await user.populate("AssignedEquipment.equipmentId");
+    await user.populate("AssignedEquipment");
 
     // console.log("Populated AssignedEquipment:", hello.AssignedEquipment);
-    
+
 
     // Prepare user data to return
     const userData = {
@@ -112,10 +116,11 @@ export const login = async (req, res) => {
       age: user.age,
       address: user.address,
       profilePicture: user.profilePicture,
-      AssignedEquipment: user.AssignedEquipment.map((ae) => ({
-        _id: ae._id,
-        equipmentId: ae.equipmentId // populated equipment object
-      }))
+      AssignedEquipment: user.AssignedEquipment,
+      state: user.state,
+      district: user.district,
+      taluka: user.taluka,
+      village: user.village,
     };
 
     return res.status(200).cookie("token", token, {
@@ -331,3 +336,29 @@ export const deleteMember = async (req, res) => {
     });
   }
 };
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming you're using middleware to set req.user
+    const user = await User.findById(userId).select("-password"); // Exclude password from response
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}

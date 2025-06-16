@@ -70,7 +70,7 @@ export const addEquipment = async (req, res) => {
     await User.findByIdAndUpdate(
       user._id, // Use the logged-in user's ID
       {
-        $push: { AssignedEquipment: { equipmentId: newEquipment._id } }
+        $push: { AssignedEquipment: newEquipment._id },
       },
       { new: true }
     );
@@ -177,6 +177,7 @@ export const updateEquipment = async (req, res) => {
 export const deleteEquipment = async (req, res) => {
   try {
     const { id } = req.params; // Equipment ID from URL
+    const user = req.user; // Get the logged-in user
 
     const deletedEquipment = await Equipment.findByIdAndDelete(id);
 
@@ -186,6 +187,13 @@ export const deleteEquipment = async (req, res) => {
         message: "Equipment not found",
       });
     }
+
+    // 1. Remove equipment from Admin AssignedEquipment
+    await User.findByIdAndUpdate(user._id, {
+      $pull: {
+        AssignedEquipment: id
+      }
+    });
 
     return res.status(200).json({
       success: true,

@@ -1,14 +1,15 @@
-
 import axios from "axios";
 import React, { useState } from "react";
-import {ASSIGNMENT_API_END_POINT} from "../../utils/constant"; // Adjust the import path as necessary
+import { ASSIGNMENT_API_END_POINT } from "../../utils/constant"; 
 
 const UserHistory = () => {
   const [userId, setUserId] = useState("");
   const [history, setHistory] = useState([]);
 
   const fetchHistory = async () => {
-    const res = await axios.get(`${ASSIGNMENT_API_END_POINT}  /history-user/${userId}`);
+    const res = await axios.get(
+      `${ASSIGNMENT_API_END_POINT}  /history-user/${userId}`
+    );
     setHistory(res.data.history);
   };
 
@@ -35,7 +36,10 @@ const UserHistory = () => {
             Equipment: {item.equipment?.name || item.equipment} <br />
             Assigned By: {item.assignedBy?.name} <br />
             Assigned At: {new Date(item.assignedAt).toLocaleString()} <br />
-            Returned At: {item.returnedAt ? new Date(item.returnedAt).toLocaleString() : "Not Returned"}
+            Returned At:{" "}
+            {item.returnedAt
+              ? new Date(item.returnedAt).toLocaleString()
+              : "Not Returned"}
           </li>
         ))}
       </ul>

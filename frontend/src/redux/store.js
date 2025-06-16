@@ -6,15 +6,20 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
-// Create persist config
-const persistConfig = {
-  key: 'user', // key for localStorage
+// Create separate persist configs for each slice
+const userPersistConfig = {
+  key: 'user', // key for user data in localStorage
   storage,
 };
 
-// Wrap your reducer with persistReducer
-const userPersistedReducer = persistReducer(persistConfig, userSlice);
-const equipmentPersistedReducer = persistReducer(persistConfig, equipmentSlice);
+const equipmentPersistConfig = {
+  key: 'equipment', // key for equipment data in localStorage
+  storage,
+};
+
+// Wrap each reducer with its own persistReducer
+const userPersistedReducer = persistReducer(userPersistConfig, userSlice);
+const equipmentPersistedReducer = persistReducer(equipmentPersistConfig, equipmentSlice);
 
 const store = configureStore({
   reducer: {
