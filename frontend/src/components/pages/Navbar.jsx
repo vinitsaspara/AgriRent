@@ -17,11 +17,13 @@ export function Navbar() {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, {
         withCredentials: true,
       });
-      console.log(res);
+      // console.log(res);
 
-      dispatch(setUser(null));
-      toast.success("Logged out successfully");
-      navigate("/login");
+      if (res.data.success) {
+        dispatch(setUser(null));
+        toast.success(res.data.message);
+        navigate("/login");
+      }
     } catch (error) {
       toast.error("Logout failed");
       console.error("Logout error:", error.message);

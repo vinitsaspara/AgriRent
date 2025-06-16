@@ -1,11 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import axios from "axios";
 import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import { Navbar } from "../pages/Navbar";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import useGetAllUsers from "@/hooks/useGetAllUsers";
 import toast from "react-hot-toast";
 
 const AddEquipment = () => {

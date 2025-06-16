@@ -13,7 +13,10 @@ const AllEquipment = () => {
   const { allEquipment } = useSelector((state) => state.equipment);
 
   const assignedEquipmentIds =
-    user?.AssignedEquipment?.map((item) => item.equipmentId._id) || [];
+    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) ||
+    [];
+
+  // console.log("AssignedEquipmentIds" + assignedEquipmentIds );
 
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -22,6 +25,8 @@ const AllEquipment = () => {
   const filteredEquipment = selectedCategory
     ? allEquipment.filter((item) => item.category === selectedCategory)
     : allEquipment;
+
+  // console.log(filteredEquipment);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
@@ -58,7 +63,9 @@ const AllEquipment = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
         {filteredEquipment.length > 0 ? (
           filteredEquipment.map((item) => {
-            const isAssigned = assignedEquipmentIds.includes(item._id);
+            const isAvailable = assignedEquipmentIds.includes(
+              item._id.toString()
+            );
             return (
               <div
                 key={item._id}
@@ -87,12 +94,12 @@ const AllEquipment = () => {
                     </p>
                     <p
                       className={`text-sm font-medium mt-2 inline-block px-3 py-1 rounded-full ${
-                        isAssigned
-                        ?"bg-green-100 text-green-800"
-                         : "bg-yellow-100 text-yellow-800"
+                        isAvailable
+                          ? "bg-green-100 text-green-800"
+                          : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {isAssigned ? "Available" : "Assigned"}
+                      {isAvailable ? "Available" : "Assigned"}
                     </p>
                   </div>
                   <Button

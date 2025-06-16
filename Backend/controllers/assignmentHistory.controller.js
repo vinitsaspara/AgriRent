@@ -63,14 +63,14 @@ export const createAssignment = async (req, res) => {
         // 1. Add equipment to assigned user's AssignedEquipment array
         await User.findByIdAndUpdate(assignedUser._id, {
             $addToSet: {
-                AssignedEquipment: { equipmentId: id }
+                AssignedEquipment: id
             }
         });
 
         // 2. Remove equipment from assigner's AssignedEquipment array (if it exists)
         await User.findByIdAndUpdate(user._id, {
             $pull: {
-                AssignedEquipment: { equipmentId: id }
+                AssignedEquipment: id
             }
         });
 
@@ -129,14 +129,14 @@ export const markAsReturned = async (req, res) => {
         // 1. Remove equipment from assignedTo user's AssignedEquipment
         await User.findByIdAndUpdate(assignedToUser._id, {
             $pull: {
-                AssignedEquipment: { equipmentId: equipmentId }
+                AssignedEquipment: equipmentId
             }
         });
 
         // 2. Add equipment to assignedBy user's AssignedEquipment
         await User.findByIdAndUpdate(assignedByUser._id, {
             $addToSet: {
-                AssignedEquipment: { equipmentId: equipmentId }
+                AssignedEquipment: equipmentId
             }
         });
 
@@ -165,7 +165,7 @@ export const getAssignedEquipmentUser = async (req, res) => {
         // Find the user by userId (case-insensitive)
         const user = await User.findOne({
             userId: { $regex: new RegExp(`^${userId}$`, "i") },
-        }).populate("AssignedEquipment.equipmentId");
+        }).populate("AssignedEquipment");
 
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
