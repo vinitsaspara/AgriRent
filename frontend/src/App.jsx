@@ -1,28 +1,14 @@
 // src/App.jsx
 import React from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  useParams,
-} from "react-router-dom";
-
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./components/pages/HomePage";
 import Login from "./components/Auth/Login";
 import { Signup } from "./components/Auth/Signup";
 import AllMembers from "./components/admin/AllMembers";
 import AllEquipment from "./components/admin/AllEquipment";
 import AddEquipment from "./components/admin/AddEquipment";
-import DetailsOfEquipmentBase from "./components/admin/DetailsOfEquipment";
-import DetailsOfMemberBase from "./components/admin/DetailsOfMember";
-import UpdateMemberBase from "./components/admin/UpdateMember";
 import ProfilePage from "./components/pages/ProfilePage";
 import UpdateProfile from "./components/pages/UpdateProfile";
-import UpdateEquipmentBase from "./components/admin/UpdateEquipment";
-import AssignEquipmentBase from "./components/AssignmentEquipment/AssignEquipment";
-import ReturnEquipmentBase from "./components/AssignmentEquipment/ReturnEquipment";
-import UserHistoryBase from "./components/AssignmentEquipment/UserHistory";
-import EquipmentHistoryBase from "./components/AssignmentEquipment/EquipmentHistory";
-import { useSelector } from "react-redux";
 import ReturnEquipment from "./components/AssignmentEquipment/ReturnEquipment";
 import AssignEquipment from "./components/AssignmentEquipment/AssignEquipment";
 import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
@@ -31,9 +17,6 @@ import UpdateMember from "./components/admin/UpdateMember";
 import UpdateEquipment from "./components/admin/UpdateEquipment";
 import EquipmentHistory from "./components/AssignmentEquipment/EquipmentHistory";
 import UserHistory from "./components/AssignmentEquipment/UserHistory";
-// Wrapper components to get params and pass as props
-
-
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
