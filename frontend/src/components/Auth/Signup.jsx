@@ -20,6 +20,10 @@ export function Signup() {
     age: "",
     phoneNumber: "",
     role: "Farmer",
+    state:"",
+    district:"",
+    taluka:"",
+    village:""
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,7 +50,7 @@ export function Signup() {
         withCredentials: true,
       });
 
-      console.log(res.data.success);
+      // console.log(res.data.success);
       
 
       if(res.data.success){
@@ -105,6 +109,45 @@ export function Signup() {
               required
               className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
             />
+            <div className="flex justify-center items-center gap-2">
+              <input
+              type="state"
+              name="state"
+              placeholder="state"
+              value={formData.state}
+              onChange={handleChange}
+              required
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
+            />
+            <input
+              type="district"
+              name="district"
+              placeholder="district"
+              value={formData.district}
+              onChange={handleChange}
+              required={user?.role !== "Admin"}
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
+            />
+            <input
+              type="taluka"
+              name="taluka"
+              placeholder="taluka"
+              value={formData.taluka}
+              onChange={handleChange}
+              required={user?.role !== "Admin"}
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
+            />
+            </div>
+            <div className="flex justify-center items-center gap-2">
+              <input
+              type="village"
+              name="village"
+              placeholder="village"
+              value={formData.village}
+              onChange={handleChange}
+              required={user?.role !== "Admin"}
+              className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md"
+            />
             <textarea
               name="address"
               placeholder="Address"
@@ -113,6 +156,7 @@ export function Signup() {
               required
               className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-shadow duration-300 ease-in-out hover:shadow-md resize-none"
             />
+            </div>
             <input
               type="number"
               name="age"

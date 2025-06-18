@@ -46,9 +46,9 @@ export const signUp = async (req, res) => {
       age,
       phoneNumber,
       state,
-      district: req.body.district || "",
-      taluka: req.body.taluka || "",
-      village: req.body.village || "",
+      district: req.body?.district || "",
+      taluka: req.body?.taluka || "",
+      village: req.body?.village || "",
     })
 
     return res.status(201).json({
