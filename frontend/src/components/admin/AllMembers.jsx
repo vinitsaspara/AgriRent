@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import useGetAllUsers from "@/hooks/useGetAllUsers";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const AllMembers = () => {
   useGetAllUsers();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.user);
   const { users = [] } = useSelector((state) => state.user.allUsers || {});
 
@@ -46,22 +45,31 @@ const AllMembers = () => {
   };
 
   const getVisibleUsers = () => {
-    switch (user?.role) {
+    if (!user) return [];
+    switch (user.role) {
       case "Admin":
-        return users.filter((u) => u.role !== "Admin");
+        return users.filter((u) => u._id !== user._id);
       case "State Employee":
         return users.filter(
           (u) =>
-            u.role === "District Employee" ||
-            u.role === "Taluka Employee" ||
-            u.role === "Farmer"
+            u.state === user.state &&
+            ["District Employee", "Taluka Employee", "Farmer"].includes(u.role)
         );
       case "District Employee":
         return users.filter(
-          (u) => u.role === "Taluka Employee" || u.role === "Farmer"
+          (u) =>
+            u.state === user.state &&
+            u.district === user.district &&
+            ["Taluka Employee", "Farmer"].includes(u.role)
         );
       case "Taluka Employee":
-        return users.filter((u) => u.role === "Farmer");
+        return users.filter(
+          (u) =>
+            u.state === user.state &&
+            u.district === user.district &&
+            u.taluka === user.taluka &&
+            u.role === "Farmer"
+        );
       default:
         return [];
     }
@@ -69,11 +77,25 @@ const AllMembers = () => {
 
   const visibleUsers = getVisibleUsers();
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredUsers = visibleUsers.filter((member) => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return (
+      member.userId.toLowerCase().includes(lowerSearch) ||
+      member.fullName.toLowerCase().includes(lowerSearch) ||
+      member.state?.toLowerCase().includes(lowerSearch) ||
+      member.district?.toLowerCase().includes(lowerSearch) ||
+      member.taluka?.toLowerCase().includes(lowerSearch) ||
+      member.village?.toLowerCase().includes(lowerSearch)
+    );
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
       <Navbar />
-      <div className="flex justify-between items-center p-4 md:p-6">
-        <h1 className="text-2xl font-bold text-emerald-800">All Members</h1>
+      <div className="flex justify-between items-center px-6 pt-6">
+        <h1 className="text-3xl font-bold text-emerald-800">All Members</h1>
         {user?.role === "Admin" && (
           <Button onClick={() => navigate("/admin/add-employee")}>
             ➕ Add Member
@@ -81,114 +103,111 @@ const AllMembers = () => {
         )}
       </div>
 
-      {visibleUsers.length > 0 ? (
-        <ScrollArea className="p-4 md:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleUsers.map((member) => (
+      <div className="px-6 mt-4 text-center">
+        <input
+          type="text"
+          placeholder="Search by ID, name, state, district, village..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+           className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+        />
+      </div>
+
+      {filteredUsers.length > 0 ? (
+        <ScrollArea className="p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredUsers.map((member) => (
               <Card
                 key={member._id}
-                className="rounded-2xl shadow-md border border-emerald-200 transition hover:shadow-lg flex flex-col justify-between min-h-[320px]"
+                className="rounded-2xl border border-emerald-200 shadow-sm hover:shadow-lg transition duration-300"
               >
-                <div className="flex-1 flex flex-col justify-between">
-                  <CardHeader>
-                    <h3 className="text-lg font-semibold text-emerald-700 truncate">
-                      {member.fullName}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      User ID: {member.userId}
-                    </p>
-                  </CardHeader>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold text-emerald-700 truncate">
+                    {member.fullName}
+                  </h3>
+                  <p className="text-sm text-gray-500">ID: {member.userId}</p>
+                </CardHeader>
 
-                  <CardContent className="text-sm space-y-1 text-gray-600 flex-1">
+                <CardContent className="text-sm text-gray-600 space-y-1">
+                  <p>
+                    <strong>Role:</strong> {member.role}
+                  </p>
+                  <p>
+                    <strong>State:</strong> {member.state}
+                  </p>
+                  {member.district && (
                     <p>
-                      <strong className="text-gray-800">Role:</strong>{" "}
-                      {member.role}
+                      <strong>District:</strong> {member.district}
                     </p>
+                  )}
+                  {member.taluka && (
                     <p>
-                      <strong className="text-gray-800">State:</strong>{" "}
-                      {member.state}
+                      <strong>Taluka:</strong> {member.taluka}
                     </p>
-                    {member.district && (
-                      <p>
-                        <strong className="text-gray-800">District:</strong>{" "}
-                        {member.district}
-                      </p>
-                    )}
-                    {member.taluka && (
-                      <p>
-                        <strong className="text-gray-800">Taluka:</strong>{" "}
-                        {member.taluka}
-                      </p>
-                    )}
-                    {member.village && (
-                      <p>
-                        <strong className="text-gray-800">Village:</strong>{" "}
-                        {member.village}
-                      </p>
-                    )}
+                  )}
+                  {member.village && (
                     <p>
-                      <strong className="text-gray-800">Phone:</strong>{" "}
-                      {member.phoneNumber}
+                      <strong>Village:</strong> {member.village}
                     </p>
-                  </CardContent>
+                  )}
+                  <p>
+                    <strong>Phone:</strong> {member.phoneNumber}
+                  </p>
+                </CardContent>
 
-                  <CardFooter className="flex justify-between items-center pt-4">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() =>
-                        navigate(`/admin/member-details/${member._id}`)
-                      }
-                    >
-                      Details
-                    </Button>
-
-                    {user?.role === "Admin" && (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            Actions
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-44 p-2">
-                          <Button
-                            variant="ghost"
-                            className="w-full justify-start text-sm"
-                            onClick={() =>
-                              navigate(`/admin/member-update/${member._id}`)
-                            }
-                          >
-                            ✏️ Update Member
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            className="w-full justify-start text-sm text-red-600"
-                            onClick={() => deleteMemberHandler(member._id)}
-                          >
-                            🗑️ Delete Member
-                          </Button>
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                  </CardFooter>
-                </div>
+                <CardFooter className="flex justify-between items-center">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() =>
+                      navigate(`/admin/member-details/${member._id}`)
+                    }
+                  >
+                    Details
+                  </Button>
+                  {user?.role === "Admin" && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          Actions
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-44 p-2">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-sm"
+                          onClick={() =>
+                            navigate(`/admin/member-update/${member._id}`)
+                          }
+                        >
+                          ✏️ Update
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-sm text-red-600"
+                          onClick={() => deleteMemberHandler(member._id)}
+                        >
+                          🗑️ Delete
+                        </Button>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </CardFooter>
               </Card>
             ))}
           </div>
         </ScrollArea>
       ) : (
-        <div className="flex justify-center items-center py-20">
-          <p className="text-lg text-gray-500">
-            No members found.{" "}
-            {user?.role === "Admin" && (
-              <button
-                onClick={() => navigate("/admin/add-employee")}
-                className="text-emerald-700 font-semibold underline ml-2"
-              >
-                Add a member
-              </button>
-            )}
-          </p>
+        <div className="text-center py-20 text-gray-500">
+          <p>No members found.</p>
+          {user?.role === "Admin" && (
+            <button
+              onClick={() => navigate("/admin/add-employee")}
+              className="text-emerald-700 font-semibold underline mt-2"
+            >
+              Add a member
+            </button>
+          )}
         </div>
       )}
     </div>

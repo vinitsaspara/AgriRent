@@ -11,6 +11,9 @@ const AllEquipment = () => {
 
   const { user } = useSelector((state) => state.user);
   const { allEquipment } = useSelector((state) => state.equipment);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sliderValue, setSliderValue] = useState(10000); // current slider position
+  const [appliedRent, setAppliedRent] = useState(10000); // used for filtering
 
   const assignedEquipmentIds =
     user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) ||
@@ -21,10 +24,24 @@ const AllEquipment = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const categories = [...new Set(allEquipment.map((item) => item.category))];
+  const maxAvailableRent = Math.max(
+    ...allEquipment.map((e) => e.rentPerHour || 0),
+    0
+  );
 
-  const filteredEquipment = selectedCategory
-    ? allEquipment.filter((item) => item.category === selectedCategory)
-    : allEquipment;
+  const filteredEquipment = allEquipment
+    .filter((item) =>
+      selectedCategory ? item.category === selectedCategory : true
+    )
+    .filter((item) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        item.name.toLowerCase().includes(search) ||
+        item.serialNumber?.toLowerCase().includes(search) ||
+        item.status?.toLowerCase().includes(search)
+      );
+    })
+    .filter((item) => item.rentPerHour <= appliedRent);
 
   // console.log(filteredEquipment);
 
@@ -68,6 +85,39 @@ const AllEquipment = () => {
             {category}
           </button>
         ))}
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 px-6 mt-6">
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="Search by name, serial number, status..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+        />
+
+        {/* 🎚️ Slider Filter */}
+        <div className="px-6 mt-4 w-full md:w-1/2">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Max Rent: ₹{sliderValue}
+          </label>
+          <input
+            type="range"
+            min={0}
+            max={maxAvailableRent}
+            step={50}
+            value={sliderValue}
+            onChange={(e) => setSliderValue(Number(e.target.value))}
+            className="w-[25vw] h-2 mr-3 bg-emerald-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <Button
+            onClick={() => setAppliedRent(sliderValue)}
+            className="mt-2 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2"
+          >
+            Apply Rent Filter
+          </Button>
+        </div>
       </div>
 
       {/* Equipment Cards */}
