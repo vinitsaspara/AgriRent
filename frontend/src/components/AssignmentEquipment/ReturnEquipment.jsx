@@ -1,13 +1,15 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
+import { setUser } from "@/redux/slices/userSlice";
 
 const ReturnEquipment = () => {
   const { equipmentId } = useParams();
+  const dispatch = useDispatch();
   useGetAssignmentHistory(equipmentId);
 
   const { equipmentHistory } = useSelector((state) => state.equipment);
@@ -63,6 +65,7 @@ const ReturnEquipment = () => {
 
       if (res.data.success) {
         navigate("/admin/all-equipment");
+        dispatch(setUser(res.data.user))
         toast.success(res.data.message);
       }
     } catch (error) {
