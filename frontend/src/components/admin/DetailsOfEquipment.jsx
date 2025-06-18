@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, CardContent } from "@/components/ui/card";
 import { Navbar } from "../pages/Navbar";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import toast from "react-hot-toast";
+import { setUser } from "@/redux/slices/userSlice";
 
 const DetailsOfEquipment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
   const { allEquipment } = useSelector((state) => state.equipment);
@@ -36,6 +38,7 @@ const DetailsOfEquipment = () => {
       );
 
       if (res.data.success) {
+        dispatch(setUser(res.data.user));
         navigate("/admin/all-equipment");
         toast.success(res.data.message);
       }

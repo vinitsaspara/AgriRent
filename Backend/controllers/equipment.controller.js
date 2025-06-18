@@ -75,10 +75,13 @@ export const addEquipment = async (req, res) => {
       { new: true }
     );
 
+    const updatedUser = await User.findById(user._id).populate("AssignedEquipment");
+
     return res.status(201).json({
       success: true,
       message: "Equipment added successfully",
       data: newEquipment,
+      user: updatedUser,
     });
   } catch (error) {
     console.error("Error adding equipment:", error);
@@ -195,10 +198,13 @@ export const deleteEquipment = async (req, res) => {
       }
     });
 
+    const updatedUser = await User.findById(user._id).populate("AssignedEquipment");
+
     return res.status(200).json({
       success: true,
       message: "Equipment deleted successfully",
       data: deletedEquipment,
+      user: updatedUser,
     });
 
   } catch (error) {

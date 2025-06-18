@@ -4,13 +4,17 @@ import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import { Navbar } from "../pages/Navbar";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slices/userSlice";
 
 const AddEquipment = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
     serialNumber: "",
-    description: "",
+    descriptionEnglish: "",
+    descriptionGujarati: "",
     rentPerHour: "",
     status: "Available",
     category: "",
@@ -48,6 +52,7 @@ const AddEquipment = () => {
       );
 
       if (res.data.success) {
+        dispatch(setUser(res.data.user));
         toast.success(res.data.message || "Equipment added successfully!");
         navigate("/admin/all-equipment");
       } else {
@@ -151,10 +156,18 @@ const AddEquipment = () => {
             </div>
 
             <textarea
-              name="description"
-              value={formData.description}
+              name="descriptionEnglish"
+              value={formData.descriptionEnglish}
               onChange={handleChange}
               placeholder="Description (include features, condition, etc.)"
+              className={`${inputClass} min-h-[100px] resize-none`}
+              required
+            />
+            <textarea
+              name="descriptionGujarati"
+              value={formData.descriptionGujarati}
+              onChange={handleChange}
+              placeholder="વર્ણન (સુવિધાઓ, સ્થિતિ, વગેરે શામેલ કરો)"
               className={`${inputClass} min-h-[100px] resize-none`}
               required
             />

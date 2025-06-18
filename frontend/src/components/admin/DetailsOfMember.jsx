@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Navbar } from "../pages/Navbar";
 
-const DetailsOfMember = () => {
+const DetailsOfuser = () => {
   const { users } = useSelector((state) => state.user.allUsers || {});
   const { id } = useParams(); // Destructure userId correctly
 
@@ -48,6 +48,42 @@ const DetailsOfMember = () => {
               <p>
                 <strong>Address:</strong> {user.address}
               </p>
+              <p className="text-sm text-gray-600">
+                  <strong>State:{" "}</strong>
+                  <span className="font-medium text-gray-800">
+                    {user.state}
+                  </span>
+                </p>
+                {user?.district && (
+                  <p className="text-sm text-gray-600">
+                    <strong>District:{" "}</strong>
+                    <span className="font-medium text-gray-800">
+                      {user.district}
+                    </span>
+                  </p>
+                )}
+                {user?.taluka && (
+                  <p className="text-sm text-gray-600">
+                    <strong>Taluka:{" "}</strong>
+                    <span className="font-medium text-gray-800">
+                      {user?.taluka}
+                    </span>
+                  </p>
+                )}
+                {user?.village && (
+                  <p className="text-sm text-gray-600">
+                    <strong>Village:{" "}</strong>
+                    <span className="font-medium text-gray-800">
+                      {user?.village}
+                    </span>
+                  </p>
+                )}
+                <p className="text-sm text-gray-600">
+                  <strong>Phone: {" "}</strong>
+                  <span className="font-medium text-gray-800">
+                    {user.phoneNumber}
+                  </span>
+                </p>
             </div>
           </div>
         </div>
@@ -56,4 +92,4 @@ const DetailsOfMember = () => {
   );
 };
 
-export default DetailsOfMember;
+export default DetailsOfuser;
