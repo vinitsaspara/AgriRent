@@ -32,6 +32,17 @@ const AllEquipment = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
       <Navbar />
 
+      {user?.role === "Admin" && (
+        <div className="flex justify-end px-4 mt-2">
+          <Button
+            onClick={() => navigate("/admin/add-equipment")}
+            className="bg-emerald-600 cursor-pointer hover:bg-emerald-700 text-white"
+          >
+            ➕ Add Equipment
+          </Button>
+        </div>
+      )}
+
       {/* Category Filter */}
       <div className="flex flex-wrap gap-3 px-4 mt-4">
         <button
