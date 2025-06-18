@@ -14,8 +14,6 @@ export const createAssignment = async (req, res) => {
 
         const { assignedTo, assignedBy } = req.body;
 
-
-
         // Validate required fields
         if (!assignedTo || !assignedBy) {
             return res.status(400).json({
@@ -74,10 +72,13 @@ export const createAssignment = async (req, res) => {
             }
         });
 
+        const updatedUser = await User.findById(user._id).populate("AssignedEquipment");
+
         res.status(201).json({
             success: true,
             message: "Assignment recorded successfully",
             assignment: newAssignment,
+            user: updatedUser,
         });
     } catch (error) {
         res.status(500).json({ success: false, message: "Failed to create assignment", error });
@@ -90,7 +91,8 @@ export const markAsReturned = async (req, res) => {
         const { assignmentId } = req.params;
         const { assignedTo, assignedBy, equipmentId } = req.body;
 
-        
+        const user = req.user;
+
 
         // Get users properly using findOne (not find)
         const assignedToUser = await User.findOne({ userId: assignedTo });
@@ -140,11 +142,15 @@ export const markAsReturned = async (req, res) => {
             }
         });
 
+        const updatedUser = await User.findById(user._id).populate("AssignedEquipment");
+
         res.status(200).json({
             success: true,
             message: "Marked as returned",
-            assignment: updated
+            assignment: updated,
+            user: updatedUser
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -161,7 +167,7 @@ export const getAssignedEquipmentUser = async (req, res) => {
         const { userId } = req.params;
 
         // console.log(userId);
-        
+
         // Find the user by userId (case-insensitive)
         const user = await User.findOne({
             userId: { $regex: new RegExp(`^${userId}$`, "i") },

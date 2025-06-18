@@ -2,13 +2,15 @@ import axios from "axios";
 import React, { useState } from "react";
 import { ASSIGNMENT_API_END_POINT } from "../../utils/constant";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/redux/slices/userSlice";
 
 const AssignEquipment = () => {
   const { user } = useSelector((state) => state.user);
   const { equipmentId } = useParams();
 
   const loggedInUserId = user.userId;
+  const dispatch = useDispatch();
 
   // console.log(equipmentId);
 
@@ -31,10 +33,11 @@ const AssignEquipment = () => {
           withCredentials: true,
         }
       );
-      console.log(res.data);
+      // console.log(res.data);
 
       if (res.data.success) {
         navigate("/admin/all-equipment");
+        dispatch(setUser(res.data.user));
         toast.sucess(res.data.message);
       }
     } catch (error) {
