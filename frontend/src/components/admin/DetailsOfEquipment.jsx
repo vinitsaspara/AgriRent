@@ -5,22 +5,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Navbar } from "../pages/Navbar";
 import { Button } from "../ui/button";
 import axios from "axios";
-import { EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import toast from "react-hot-toast";
+import { ASSIGNMENT_API_END_POINT, EQUIPMENT_API_END_POINT } from "@/utils/constant";
 import { setUser } from "@/redux/slices/userSlice";
+import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
 
 const DetailsOfEquipment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Custom hook to fetch assignment history
+  useGetAssignmentHistory(id);
+
+  // Redux state
   const { user } = useSelector((state) => state.user);
-  const { allEquipment } = useSelector((state) => state.equipment);
+  const { allEquipment, equipmentHistory } = useSelector((state) => state.equipment);
+  const loggedInUserId = user?._id;
+
+  // Find assignment record for current user
+  const matchedRecord = equipmentHistory.find(
+    (item) => item.equipment === id && item.assignedTo?._id === loggedInUserId
+  );
+  const assignmentId = matchedRecord?._id || null;
+
   const assignedEquipmentIds =
-    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) ||
-    [];
+    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) || [];
 
   const [equipment, setEquipment] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const found = (allEquipment || []).find((eq) => eq._id === id);
@@ -48,11 +61,28 @@ const DetailsOfEquipment = () => {
     }
   };
 
-  const isAssigned = assignedEquipmentIds.includes(id.toString());
-  const statusLabel = isAssigned ? "Available" : "Assigned";
-  const statusColor = isAssigned
-    ? "bg-green-100 text-green-800"
-    : "bg-yellow-100 text-yellow-800";
+  const handleReturn = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        `${ASSIGNMENT_API_END_POINT}/mark-returned/${assignmentId}`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        dispatch(setUser(res.data.user));
+        navigate("/admin/all-equipment");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Error while returning equipment."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!equipment) {
     return (
@@ -61,6 +91,12 @@ const DetailsOfEquipment = () => {
       </div>
     );
   }
+
+  const isAssigned = assignedEquipmentIds.includes(id.toString());
+  const statusLabel = isAssigned ? "Available" : "Assigned";
+  const statusColor = isAssigned
+    ? "bg-green-100 text-green-800"
+    : "bg-yellow-100 text-yellow-800";
 
   return (
     <div className="min-h-screen bg-emerald-50">
@@ -110,17 +146,17 @@ const DetailsOfEquipment = () => {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 ">
               {isAssigned && (
                 <Button
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onClick={() => navigate(`/admin/equipment-update/${id}`)}
                 >
                   ✏️ Update
                 </Button>
               )}
               <Button
-                className="w-full"
+                className="w-full cursor-pointer"
                 variant="destructive"
                 onClick={removeHandler}
               >
@@ -130,7 +166,7 @@ const DetailsOfEquipment = () => {
 
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button
-                className="w-full"
+                className="w-full cursor-pointer"
                 onClick={() => navigate(`/assign-equipment/${id}`)}
               >
                 📦 Assign Equipment
@@ -138,16 +174,17 @@ const DetailsOfEquipment = () => {
             </div>
 
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {user?.role !== "Admin" && (
+              {user?.role !== "Admin" && assignmentId && (
                 <Button
-                  className="w-full"
-                  onClick={() => navigate(`/return-equipment/${id}`)}
+                  className="w-full cursor-pointer"
+                  onClick={handleReturn}
+                  disabled={loading}
                 >
-                  🔁 Return Equipment
+                  🔁 {loading ? "Returning..." : "Return Equipment"}
                 </Button>
               )}
               <Button
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="w-full cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
                 onClick={() => navigate(`/history-equipment/${id}`)}
               >
                 📜 View History
