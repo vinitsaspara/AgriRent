@@ -89,57 +89,39 @@ export const createAssignment = async (req, res) => {
 export const markAsReturned = async (req, res) => {
     try {
         const { assignmentId } = req.params;
-        const { assignedTo, assignedBy, equipmentId } = req.body;
-
         const user = req.user;
 
+        const assignment = await AssignmentHistory.findById(assignmentId);
 
-        // Get users properly using findOne (not find)
-        const assignedToUser = await User.findOne({ userId: assignedTo });
-        const assignedByUser = await User.findOne({ userId: assignedBy });
-
-        if (!assignedToUser || !assignedByUser) {
-            return res.status(400).json({
-                success: false,
-                message: "User ID not found."
-            });
-        }
-
-        const existEquipment = await Equipment.findById(equipmentId);
-
-        if (!existEquipment) {
+        if (!assignment) {
             return res.status(404).json({
                 success: false,
-                message: "Equipment does not exist."
+                message: "Assignment not found.",
             });
         }
 
-        // Mark return in assignment history
+        // Destructure necessary fields from the assignment
+        const { assignedTo, assignedBy, equipment } = assignment;
+
+        // 1. Mark return in assignment history
         const updated = await AssignmentHistory.findOneAndUpdate(
-            { _id: assignmentId, equipment: equipmentId },
+            { _id: assignmentId },
             { returnedAt: new Date() },
             { new: true }
         );
 
-        if (!updated) {
-            return res.status(404).json({
-                success: false,
-                message: "Assignment not found."
-            });
-        }
-
-        // 1. Remove equipment from assignedTo user's AssignedEquipment
-        await User.findByIdAndUpdate(assignedToUser._id, {
+        // 2. Remove equipment from assignedTo user's AssignedEquipment
+        await User.findByIdAndUpdate(assignedTo, {
             $pull: {
-                AssignedEquipment: equipmentId
-            }
+                AssignedEquipment: equipment,
+            },
         });
 
-        // 2. Add equipment to assignedBy user's AssignedEquipment
-        await User.findByIdAndUpdate(assignedByUser._id, {
+        // 3. Add equipment back to assignedBy user's AssignedEquipment
+        await User.findByIdAndUpdate(assignedBy, {
             $addToSet: {
-                AssignedEquipment: equipmentId
-            }
+                AssignedEquipment: equipment,
+            },
         });
 
         const updatedUser = await User.findById(user._id).populate("AssignedEquipment");
@@ -148,17 +130,18 @@ export const markAsReturned = async (req, res) => {
             success: true,
             message: "Marked as returned",
             assignment: updated,
-            user: updatedUser
+            user: updatedUser,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
             message: "Failed to update return",
-            error
+            error,
         });
     }
 };
+
 
 
 // Get history for a specific user by userId (case-insensitive)

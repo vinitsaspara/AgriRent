@@ -9,7 +9,6 @@ import AllEquipment from "./components/admin/AllEquipment";
 import AddEquipment from "./components/admin/AddEquipment";
 import ProfilePage from "./components/pages/ProfilePage";
 import UpdateProfile from "./components/pages/UpdateProfile";
-import ReturnEquipment from "./components/AssignmentEquipment/ReturnEquipment";
 import AssignEquipment from "./components/AssignmentEquipment/AssignEquipment";
 import DetailsOfEquipment from "./components/admin/DetailsOfEquipment";
 import DetailsOfMember from "./components/admin/DetailsOfMember";
@@ -39,7 +38,6 @@ const appRouter = createBrowserRouter([
 
   // assignment routes
   { path: "/assign-equipment/:equipmentId", element: <AssignEquipment /> },
-  { path: "/return-equipment/:equipmentId", element: <ReturnEquipment /> },
   { path: "/history-user/:userId", element: <UserHistory /> },
   { path: "/history-equipment/:equipmentId", element: <EquipmentHistory /> },
 ]);

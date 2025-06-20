@@ -109,7 +109,7 @@ const AllMembers = () => {
           placeholder="Search by ID, name, state, district, village..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-           className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
         />
       </div>
 
@@ -119,7 +119,7 @@ const AllMembers = () => {
             {filteredUsers.map((member) => (
               <Card
                 key={member._id}
-                className="rounded-2xl border border-emerald-200 shadow-sm hover:shadow-lg transition duration-300"
+                className="flex flex-col justify-between h-full rounded-2xl border border-emerald-200 shadow-sm hover:shadow-lg transition duration-300"
               >
                 <CardHeader>
                   <h3 className="text-lg font-semibold text-emerald-700 truncate">
@@ -128,7 +128,7 @@ const AllMembers = () => {
                   <p className="text-sm text-gray-500">ID: {member.userId}</p>
                 </CardHeader>
 
-                <CardContent className="text-sm text-gray-600 space-y-1">
+                <CardContent className="text-sm text-gray-600 space-y-1 flex-grow">
                   <p>
                     <strong>Role:</strong> {member.role}
                   </p>
@@ -155,7 +155,7 @@ const AllMembers = () => {
                   </p>
                 </CardContent>
 
-                <CardFooter className="flex justify-between items-center">
+                <CardFooter className="flex justify-between items-center mt-auto border-t pt-2">
                   <Button
                     size="sm"
                     variant="secondary"

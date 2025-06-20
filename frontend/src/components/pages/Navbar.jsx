@@ -46,12 +46,12 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <a
-              href="/"
-              className="text-emerald-100 hover:text-white hover:underline decoration-emerald-400 underline-offset-4 font-medium transition-all duration-300"
+            <button
+              onClick={() => navigate("/")}
+              className="text-emerald-100 hover:text-white hover:underline decoration-emerald-400 cursor-pointer underline-offset-4 font-medium transition-all duration-300"
             >
               Home
-            </a>
+            </button>
 
             {/* Admin Navigation */}
             <div className="flex items-center space-x-6">
