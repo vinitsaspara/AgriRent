@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { Button } from "../ui/button";
+import ProfileHistory from "./ProfileHistory";
 
 const ProfilePage = () => {
   const { user } = useSelector((state) => state.user);
@@ -31,78 +32,85 @@ const ProfilePage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-emerald-50 to-green-100">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-xl bg-white p-8 rounded-xl shadow-2xl">
-          <h2 className="text-2xl font-bold text-emerald-800 mb-6 text-center">
+
+      <div className="flex-grow flex flex-col lg:flex-row gap-6 px-6 py-12">
+        {/* Left Panel - Profile Info */}
+        <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-xl">
+          <h2 className="text-2xl font-bold text-emerald-800 mb-4 text-center">
             Profile Information
           </h2>
 
-          {/* Profile Picture */}
           {user.profilePicture && (
             <div className="flex justify-center mb-6">
               <img
                 src={user.profilePicture}
                 alt="Profile"
-                className="w-32 h-32 rounded-full object-cover border-4 border-emerald-300 shadow-md"
+                className="w-28 h-28 rounded-full object-cover border-4 border-emerald-300 shadow-md"
               />
             </div>
           )}
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Full Name
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.fullName}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Email
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.email}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Address
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.address}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Age
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.age}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Phone Number
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.phoneNumber}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-700">
+              <label className="text-sm font-medium text-emerald-700">
                 Role
               </label>
-              <p className="mt-1 text-gray-800 bg-emerald-50 p-3 rounded-md">
+              <p className="bg-emerald-50 p-2 rounded-md text-gray-800">
                 {user.role}
               </p>
             </div>
-            <div className="flex items-center justify-center">
-              <Button 
-              onClick={()=>navigate("/user/update-profile")}
-              className=" cursor-pointer">Update profile</Button>
-            </div>
           </div>
+
+          <div className="mt-6 text-center">
+            <Button onClick={() => navigate("/user/update-profile")}>
+              Update Profile
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Panel - History */}
+        <div className="w-full lg:w-2/3">
+          <ProfileHistory />
         </div>
       </div>
     </div>

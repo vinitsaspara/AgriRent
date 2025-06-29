@@ -173,6 +173,7 @@ export const getHistoryByEquipment = async (req, res) => {
         const { equipmentId } = req.params;
 
         const history = await AssignmentHistory.find({ equipment: equipmentId })
+            .populate("equipment")
             .populate("assignedTo", "fullName role userId email address phoneNumber profilePicture")
             .populate("assignedBy", "fullName role userId email address phoneNumber profilePicture").select("-__v");
 
@@ -184,7 +185,11 @@ export const getHistoryByEquipment = async (req, res) => {
 
 export const allAssignedEquipment = async (req, res) => {
     try {
-        const assignedEquipmentList = await AssignmentHistory.find();
+        const assignedEquipmentList = await AssignmentHistory.find()
+            .populate("assignedBy", "fullName role") // _id is always included by default
+            .populate("assignedTo", "fullName role") // optional if needed
+            .populate("equipment", "name");          // only show equipment name
+
 
         // console.log(assignedEquipmentList);
 
