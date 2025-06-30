@@ -6,31 +6,39 @@ import { Navbar } from "../pages/Navbar";
 import { Button } from "../ui/button";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { ASSIGNMENT_API_END_POINT, EQUIPMENT_API_END_POINT } from "@/utils/constant";
+import {
+  ASSIGNMENT_API_END_POINT,
+  EQUIPMENT_API_END_POINT,
+} from "@/utils/constant";
 import { setUser } from "@/redux/slices/userSlice";
 import useGetAssignmentHistory from "@/hooks/useGetAssignmentHistory";
 
 const DetailsOfEquipment = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   // Custom hook to fetch assignment history
   useGetAssignmentHistory(id);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   // Redux state
   const { user } = useSelector((state) => state.user);
-  const { allEquipment, equipmentHistory } = useSelector((state) => state.equipment);
+  const { allEquipment, equipmentHistory } = useSelector(
+    (state) => state.equipment
+  );
   const loggedInUserId = user?._id;
 
   // Find assignment record for current user
   const matchedRecord = equipmentHistory.find(
-    (item) => item.equipment === id && item.assignedTo?._id === loggedInUserId
+    (item) =>
+      item.equipment?._id === id &&
+      item.assignedTo?._id.toString() === loggedInUserId.toString()
   );
   const assignmentId = matchedRecord?._id || null;
 
   const assignedEquipmentIds =
-    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) || [];
+    user?.AssignedEquipment?.map((equipment) => equipment?._id.toString()) ||
+    [];
 
   const [equipment, setEquipment] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -146,43 +154,52 @@ const DetailsOfEquipment = () => {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 ">
-              {isAssigned && (
+            {/* Admin-only: Update & Remove */}
+            {user?.role === "Admin" && (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button
                   className="w-full cursor-pointer"
                   onClick={() => navigate(`/admin/equipment-update/${id}`)}
                 >
                   ✏️ Update
                 </Button>
-              )}
-              <Button
-                className="w-full cursor-pointer"
-                variant="destructive"
-                onClick={removeHandler}
-              >
-                🗑️ Remove
-              </Button>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button
-                className="w-full cursor-pointer"
-                onClick={() => navigate(`/assign-equipment/${id}`)}
-              >
-                📦 Assign Equipment
-              </Button>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {user?.role !== "Admin" && assignmentId && (
                 <Button
                   className="w-full cursor-pointer"
-                  onClick={handleReturn}
-                  disabled={loading}
+                  variant="destructive"
+                  onClick={removeHandler}
                 >
-                  🔁 {loading ? "Returning..." : "Return Equipment"}
+                  🗑️ Remove
+                </Button>
+              </div>
+            )}
+
+            {/* Conditional Assign and/or Return Equipment */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {statusLabel === "Available" && user?.role !== "Farmer" && (
+                <Button
+                  className="w-full cursor-pointer"
+                  onClick={() => navigate(`/assign-equipment/${id}`)}
+                >
+                  📦 Assign Equipment
                 </Button>
               )}
+
+              {statusLabel === "Available" &&
+                user?.role !== "Admin" && assignmentId && (
+                  <Button
+                    className="w-full cursor-pointer"
+                    onClick={handleReturn}
+                    disabled={loading}
+                  >
+                    🔁 {loading ? "Returning..." : "Return Equipment"}
+                  </Button>
+                )}
+
+              
+            </div>
+
+            {/* View History: visible to all roles */}
+            <div className="mt-4">
               <Button
                 className="w-full cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
                 onClick={() => navigate(`/history-equipment/${id}`)}

@@ -1,12 +1,13 @@
-import useGetAllEquipment from '@/hooks/userGetAllEquipment'
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Navbar } from '../pages/Navbar';
-import { Button } from '../ui/button';
+import useGetAllEquipment from "@/hooks/userGetAllEquipment";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Navbar } from "../pages/Navbar";
+import { Button } from "../ui/button";
 
 const AllEquipment = () => {
   useGetAllEquipment();
+
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);

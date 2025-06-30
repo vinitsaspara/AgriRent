@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const equipmentSlice = createSlice({
     name: "equipment",
     initialState: {
-        allEquipment: null,
+        allEquipment: [],
         equipmentHistory: []
     },
     reducers: {

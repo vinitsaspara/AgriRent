@@ -186,8 +186,8 @@ export const getHistoryByEquipment = async (req, res) => {
 export const allAssignedEquipment = async (req, res) => {
     try {
         const assignedEquipmentList = await AssignmentHistory.find()
-            .populate("assignedBy", "fullName role") // _id is always included by default
-            .populate("assignedTo", "fullName role") // optional if needed
+            .populate("assignedBy", "fullName role userId") // _id is always included by default
+            .populate("assignedTo", "fullName role userId") // optional if needed
             .populate("equipment", "name");          // only show equipment name
 
 
