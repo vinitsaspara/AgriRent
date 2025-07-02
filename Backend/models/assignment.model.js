@@ -21,6 +21,10 @@ const assignmentHistorySchema = new mongoose.Schema({
     default: Date.now, 
     required: true
   },
+  payment:{
+    type:Boolean,
+    default:false
+  },
   returnedAt: {
     type: Date
   }, 

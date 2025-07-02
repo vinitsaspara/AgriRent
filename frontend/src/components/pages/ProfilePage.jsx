@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { Button } from "../ui/button";
 import ProfileHistory from "./ProfileHistory";
+import PaymentPage from "./PaymentPage";
 
 const ProfilePage = () => {
   const { user } = useSelector((state) => state.user);
@@ -108,9 +109,19 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Right Panel - History */}
-        <div className="w-full lg:w-2/3">
-          <ProfileHistory />
+        {/* Right Panel - Payment and History */}
+        <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          {/* Top - PaymentPage */}
+          {user?.role === "Farmer" && (
+            <div className="bg-white p-6 rounded-xl shadow-xl">
+              <PaymentPage />
+            </div>
+          )}
+
+          {/* Bottom - ProfileHistory */}
+          <div>
+            <ProfileHistory />
+          </div>
         </div>
       </div>
     </div>

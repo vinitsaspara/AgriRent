@@ -188,7 +188,7 @@ export const allAssignedEquipment = async (req, res) => {
         const assignedEquipmentList = await AssignmentHistory.find()
             .populate("assignedBy", "fullName role userId") // _id is always included by default
             .populate("assignedTo", "fullName role userId") // optional if needed
-            .populate("equipment", "name");          // only show equipment name
+            .populate("equipment", "name rentPerHour");          // only show equipment name
 
 
         // console.log(assignedEquipmentList);
@@ -208,3 +208,32 @@ export const allAssignedEquipment = async (req, res) => {
         });
     }
 }
+
+export const completePayment = async (req, res) => {
+    try {
+        const { assignmentIds } = req.body;
+        
+        console.log(assignmentIds);
+        
+
+        if (!Array.isArray(assignmentIds) || assignmentIds.length === 0) {
+            return res.status(400).json({ message: "assignmentIds must be a non-empty array" });
+        }
+
+        const result = await AssignmentHistory.updateMany(
+            { _id: { $in: assignmentIds } },
+            { $set: { payment: true } }
+        );
+
+        res.status(200).json({
+            message: "payment completed successfully",
+            modifiedCount: result.modifiedCount,
+            success: true
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};

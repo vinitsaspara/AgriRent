@@ -20,7 +20,7 @@ const useGeetAllAssignment = () => {
           }
         );
 
-        console.log("Response from get-all-equipment:", res.data);
+        // console.log("Response from get-all-equipment:", res.data);
 
         if (res.data.success) {
           dispatch(setAllAssignment(res.data.assignedEquipmentList));

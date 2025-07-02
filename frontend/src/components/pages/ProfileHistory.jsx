@@ -31,51 +31,65 @@ const ProfileHistory = () => {
         }`}
       >
         {/* Assigned By You */}
-        <div
-  className={`rounded-lg p-4 border bg-yellow-50 border-yellow-200 ${
-    user?.role !== "Admin" ? "max-h-[110vh] overflow-y-auto" : ""
-  }`}
->
-  <h3 className="text-lg font-semibold text-yellow-800 mb-4">
-    Assigned By You
-  </h3>
-  {assignedByUser.length > 0 ? (
-    <ul className={`${user?.role === "Admin" ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "space-y-3"}`}>
-      {assignedByUser.map((item) => (
-        <li
-          onClick={() =>
-            navigate(`/admin/equipment-details/${item.equipment?._id}`)
-          }
-          key={item._id}
-          className="bg-white cursor-pointer rounded-lg p-4 border border-yellow-300 shadow-sm"
-        >
-          <p className="font-bold text-yellow-900">
-            {item.equipment?.name}
-          </p>
-          <p className="text-sm text-gray-700">
-            Assigned To: {item.assignedTo?.fullName} (
-            {item.assignedTo?.userId})
-          </p>
-          <p className="text-sm text-gray-600">
-            Assigned At: {new Date(item.assignedAt).toLocaleString()}
-          </p>
-          {item.returnedAt && (
-            <p className="text-sm text-gray-600">
-              Returned At: {new Date(item.returnedAt).toLocaleString()}
-            </p>
-          )}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p className="text-sm text-gray-600">No records found.</p>
-  )}
-</div>
-
+        {user?.role != "Farmer" && (
+          <div
+            className={`rounded-lg p-4 border bg-yellow-50 border-yellow-200 ${
+              user?.role !== "Admin" ? "max-h-[110vh] overflow-y-auto" : ""
+            }`}
+          >
+            <h3 className="text-lg font-semibold text-yellow-800 mb-4">
+              Assigned By You
+            </h3>
+            {assignedByUser.length > 0 ? (
+              <ul
+                className={`${
+                  user?.role === "Admin"
+                    ? "grid grid-cols-1 md:grid-cols-2 gap-4"
+                    : "space-y-3"
+                }`}
+              >
+                {assignedByUser.map((item) => (
+                  <li
+                    onClick={() =>
+                      navigate(
+                        `/admin/equipment-details/${item.equipment?._id}`
+                      )
+                    }
+                    key={item._id}
+                    className="bg-white cursor-pointer rounded-lg p-4 border border-yellow-300 shadow-sm"
+                  >
+                    <p className="font-bold text-yellow-900">
+                      {item.equipment?.name}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Assigned To: {item.assignedTo?.fullName} (
+                      {item.assignedTo?.userId})
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Assigned At: {new Date(item.assignedAt).toLocaleString()}
+                    </p>
+                    {item.returnedAt && (
+                      <p className="text-sm text-gray-600">
+                        Returned At:{" "}
+                        {new Date(item.returnedAt).toLocaleString()}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-600">No records found.</p>
+            )}
+          </div>
+        )}
 
         {/* Assigned To You - only show if not Admin */}
         {user?.role !== "Admin" && (
-          <div className="rounded-lg p-4 border bg-emerald-50 border-emerald-200 max-h-[110vh] overflow-y-auto">
+          <div
+            className={`rounded-lg p-4 border bg-yellow-50 border-yellow-200 ${
+              user?.role !== "Farmer" ? "max-h-[110vh] overflow-y-auto" : ""
+            }`}
+          >
             <h3 className="text-lg font-semibold text-emerald-800 mb-4">
               Assigned To You
             </h3>
@@ -119,9 +133,11 @@ const ProfileHistory = () => {
 
       {/* Summary Count */}
       <div className="flex justify-between items-center mt-6 px-2">
-        <p className="text-sm font-medium text-yellow-900">
-          Total Assigned By You: {assignedByUser.length}
-        </p>
+        {user?.role !== "Farmer" && (
+          <p className="text-sm font-medium text-yellow-900">
+            Total Assigned By You: {assignedByUser.length}
+          </p>
+        )}
         {user?.role !== "Admin" && (
           <p className="text-sm font-medium text-emerald-900">
             Total Assigned To You: {assignedToUser.length}
