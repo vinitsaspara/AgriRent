@@ -36,7 +36,7 @@ const ProfilePage = () => {
 
       <div className="flex-grow flex flex-col lg:flex-row gap-6 px-6 py-12">
         {/* Left Panel - Profile Info */}
-        <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-xl">
+        <div className="w-full lg:h-[130vh] lg:w-1/3 bg-white p-6 rounded-xl shadow-xl">
           <h2 className="text-2xl font-bold text-emerald-800 mb-4 text-center">
             Profile Information
           </h2>
