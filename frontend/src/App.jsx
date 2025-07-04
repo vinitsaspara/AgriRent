@@ -16,6 +16,8 @@ import UpdateMember from "./components/admin/UpdateMember";
 import UpdateEquipment from "./components/admin/UpdateEquipment";
 import EquipmentHistory from "./components/AssignmentEquipment/EquipmentHistory";
 import UserHistory from "./components/AssignmentEquipment/UserHistory";
+import Success from "./components/pages/Success";
+import Cancel from "./components/pages/Cancel";
 
 const appRouter = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -40,6 +42,16 @@ const appRouter = createBrowserRouter([
   { path: "/assign-equipment/:equipmentId", element: <AssignEquipment /> },
   { path: "/history-user/:userId", element: <UserHistory /> },
   { path: "/history-equipment/:equipmentId", element: <EquipmentHistory /> },
+
+  // payment routes
+  {
+    path : "/payment/success",
+    element: <Success/>
+  },{
+    path : "/payment/cancel",
+    element : <Cancel/>
+  }
+
 ]);
 
 function App() {

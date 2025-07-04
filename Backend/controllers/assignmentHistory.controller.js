@@ -1,8 +1,12 @@
+import mongoose from "mongoose";
 import { AssignmentHistory } from "../models/assignment.model.js";
 import { Equipment } from "../models/equipment.model.js";
 import { User } from "../models/user.model.js";
+import Stripe from 'stripe';
 
+const stripe = new Stripe(process.env.STRIPE_SECRET);
 // Assign equipment to user
+
 
 export const createAssignment = async (req, res) => {
     try {
@@ -209,31 +213,101 @@ export const allAssignedEquipment = async (req, res) => {
     }
 }
 
+
+
 export const completePayment = async (req, res) => {
     try {
         const { assignmentIds } = req.body;
-        
-        console.log(assignmentIds);
-        
 
-        if (!Array.isArray(assignmentIds) || assignmentIds.length === 0) {
-            return res.status(400).json({ message: "assignmentIds must be a non-empty array" });
+        const objectIds = assignmentIds.map(id => new mongoose.Types.ObjectId(id));
+
+        const matchedAssignments = await AssignmentHistory.find({
+            _id: { $in: objectIds },
+        })
+            .populate({
+                path: "equipment",
+                select: "name rentPerHour",
+            })
+            .select("-assignedTo -assignedBy");
+
+        // Check for missing equipment data
+        for (const item of matchedAssignments) {
+            if (!item.equipment || typeof item.equipment.rentPerHour !== "number") {
+                return res.status(400).json({
+                    success: false,
+                    message: `Missing rentPerHour for assignment ${item._id}`,
+                });
+            }
         }
 
-        const result = await AssignmentHistory.updateMany(
-            { _id: { $in: assignmentIds } },
-            { $set: { payment: true } }
-        );
+        const lineItems = matchedAssignments.map((item) => {
+            const start = new Date(item.assignedAt);
+            const end = item.returnedAt ? new Date(item.returnedAt) : new Date();
 
-        res.status(200).json({
-            message: "payment completed successfully",
-            modifiedCount: result.modifiedCount,
-            success: true
+            const hoursUsed = (end - start) / (1000 * 60 * 60); // float hours
+            const totalAmountInPaise = Math.round(hoursUsed * item.equipment.rentPerHour * 100);
+
+            return {
+                price_data: {
+                    currency: "inr",
+                    product_data: {
+                        name: `${item.equipment.name} (${hoursUsed.toFixed(2)} hrs)`,
+                    },
+                    unit_amount: totalAmountInPaise,
+                },
+                quantity: 1,
+            };
+        });
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: lineItems,
+            mode: "payment",
+            success_url: "http://localhost:5173/payment/success",
+            cancel_url: "http://localhost:5173/payment/cancel",
+        });
+
+        return res.status(200).json({
+            message: "Payment session created",
+            id: session.id,
+            success: true,
         });
     } catch (error) {
-        res.status(500).json({
+        console.error("Stripe Error:", error);
+        return res.status(500).json({
             message: "Internal server error",
             error: error.message,
         });
     }
 };
+
+
+
+export const markCompletePayment = async (req, res) => {
+    try {
+        const { assignmentIds } = req.body;
+
+        // ✅ Convert string IDs to ObjectIds
+        const objectIds = assignmentIds.map((id) => new mongoose.Types.ObjectId(id));
+
+        // ✅ Mark payment as true
+        await AssignmentHistory.updateMany(
+            { _id: { $in: objectIds } },
+            { $set: { payment: true } }
+        );
+
+        return res.status(200).json({
+            message: "Payment marked as complete",
+            success: true,
+        });
+
+    } catch (error) {
+        console.error("markCompletePayment error:", error);
+        return res.status(500).json({
+            message: "Something went wrong while updating payment status",
+            success: false,
+        });
+    }
+};
+
+

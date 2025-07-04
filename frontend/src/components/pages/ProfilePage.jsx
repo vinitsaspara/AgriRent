@@ -5,8 +5,10 @@ import { Navbar } from "./Navbar";
 import { Button } from "../ui/button";
 import ProfileHistory from "./ProfileHistory";
 import PaymentPage from "./PaymentPage";
+import useGeetAllAssignment from "@/hooks/useGetAllAssignment";
 
 const ProfilePage = () => {
+  useGeetAllAssignment();
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
