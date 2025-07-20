@@ -252,7 +252,7 @@ export const completePayment = async (req, res) => {
                     currency: "inr",
                     product_data: {
                         name: `${item.equipment.name} (${hoursUsed.toFixed(2)} hrs)`,
-                    },
+                    }, 
                     unit_amount: totalAmountInPaise,
                 },
                 quantity: 1,
