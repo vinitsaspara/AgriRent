@@ -6,13 +6,29 @@ AgriRent is a full-stack web platform that allows farmers to **browse, rent, and
 
 ## 🌐 Live Demo
 
-> Coming Soon / [Add your deployed link here]
+> Coming Soon 
 
 ---
 
 ## 📸 Screenshots
 
-> (Add screenshots/gifs of your UI here for visual appeal)
+<p align="center">
+  <h3>Home Page</h3>
+  <img src="./frontend/src/assets/home_page.png" alt="AgriRent Screenshot" width="700"/>
+</p>
+<p align="center">
+  <h3>Admin All Employee Dashboard</h3>
+  <img src="./frontend/src/assets/Admin_All_Emplpyee_Page.png" alt="AgriRent Screenshot" width="700"/>
+</p>
+<p align="center">
+  <h3>All Equipment Page</h3>
+  <img src="./frontend/src/assets/All_Equipment_Page.png" alt="AgriRent Screenshot" width="700"/>
+</p>
+<p align="center">
+  <h3>Profile Page</h3>
+  <img src="./frontend/src/assets/Profile_page.png" alt="AgriRent Screenshot" width="700"/>
+</p>
+
 
 ---
 
@@ -48,8 +64,8 @@ AgriRent is a full-stack web platform that allows farmers to **browse, rent, and
 
 ```
 AgriRent/
-├── client/          # Frontend React app
-└── server/          # Backend Express app
+├── frontend/          # Frontend React app
+└── backend/          # Backend Express app
 ```
 
 ---
@@ -59,7 +75,7 @@ AgriRent/
 ### Backend
 
 ```bash
-cd server
+cd backend
 npm install
 npm run dev
 ```
@@ -67,7 +83,7 @@ npm run dev
 ### Frontend
 
 ```bash
-cd client
+cd frontend
 npm install
 npm run dev
 ```
